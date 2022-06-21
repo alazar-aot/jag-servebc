@@ -94,6 +94,11 @@ const NavBar = React.memo(() => {
                   <ServiceFlowFilterListDropDown/>
               </NavDropdown>:null}
 
+              {getUserRolePermission(userRoles, STAFF_REVIEWER) ?
+                <Nav.Link as={Link} to='/task_new'  className={`main-nav nav-item ${
+                  pathname.match(/^\/task_new/) ? "active-tab" : ""
+                }`}> Tasks</Nav.Link>:null}
+
               {getUserRolePermission(userRoles, STAFF_REVIEWER) ?<NavDropdown title={<>Dashboards</>}
                                                                               id="dashboard-dropdown"
                                                                               className={`main-nav nav-item ${
