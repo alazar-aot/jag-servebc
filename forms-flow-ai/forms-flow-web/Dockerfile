@@ -14,11 +14,11 @@ RUN apk update && apk upgrade && \
 
 
 # expect a build-time variable
-ARG FORMFLOW_SOURCE_REPO_BRANCH
+ARG FORMFLOW_SOURCE_REPO_BRANCH='v4.0.5-alpha'
 # use the value to set the ENV var default
 ENV FORMFLOW_SOURCE_REPO_BRANCH ${FORMFLOW_SOURCE_REPO_BRANCH}
 # expect a build-time variable
-ARG FORMFLOW_SOURCE_REPO_URL
+ARG FORMFLOW_SOURCE_REPO_URL='https://github.com/AOT-Technologies/forms-flow-ai.git'
 # use the value to set the ENV var default
 ENV FORMFLOW_SOURCE_REPO_URL ${FORMFLOW_SOURCE_REPO_URL}
 
