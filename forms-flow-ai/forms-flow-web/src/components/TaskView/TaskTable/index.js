@@ -20,6 +20,7 @@ import { Button } from "react-bootstrap";
 import { getLocalDateTime } from "../../../apiManager/services/formatterService";
 import { getoptions } from "./pagination";
 import { MAX_RESULTS } from "../../ServiceFlow/constants/taskConstants";
+import Loading from "../../../containers/Loading";
 
 const TaskTable = React.memo(() => {
   const dispatch = useDispatch();
@@ -29,6 +30,29 @@ const TaskTable = React.memo(() => {
   const page = useSelector((state) => state.bpmTasks.activePage);
   const selectedFilter = useSelector((state) => state.bpmTasks.selectedFilter);
   const reqData = useSelector((state) => state.bpmTasks.listReqParams);
+
+  const [isLoading, setIsLoading] = React.useState(false);
+  useEffect(() => {
+    setIsLoading(false);
+  }, [taskList]);
+  /*
+  useEffect(() => {
+    dispatch(getAllApplicationStatus());
+  }, [dispatch]);
+  */
+  const getNoDataIndicationContent = () => {
+    return (
+      <div className="div-no-tasks">
+        <label className="lbl-no-tasks"> No tasks found </label>
+        <br />
+        <label className="lbl-no-tasks-desc">
+          {" "}
+          Please change the selected filters to view tasks{" "}
+        </label>
+        <br />
+      </div>
+    );
+  };
 
   const useNoRenderRef = (currentValue) => {
     const ref = useRef(currentValue);
@@ -58,7 +82,7 @@ const TaskTable = React.memo(() => {
       if (countPerPage > 5) {
         dispatch(setBPMTaskLoader(true));
       } else {
-        //setIsLoading(true)
+        setIsLoading(true)
       }
     }
     //dispatch(setCountPerpage(newState.sizePerPage));
@@ -155,6 +179,7 @@ const TaskTable = React.memo(() => {
   return (
     <>
       <BootstrapTable
+        classes="task-view-table"
         keyField="id"
         data={taskList}
         columns={columns}
@@ -164,6 +189,7 @@ const TaskTable = React.memo(() => {
         pagination={paginationFactory(
           getoptions(tasksCount, page, countPerPage)
         )}
+        noDataIndication={() => !isLoading && getNoDataIndicationContent()}
         onTableChange={handlePageChange}
       />
     </>
