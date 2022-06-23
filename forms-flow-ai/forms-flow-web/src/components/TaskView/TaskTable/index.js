@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import "../TaskView.scss";
-
+import {AWAITING_ACKNOWLEDGEMENT} from "../../../constants/applicationConstants";
 import {
   fetchFilterList,
   fetchProcessDefinitionList,
@@ -122,6 +123,18 @@ const TaskTable = React.memo(() => {
     console.log("ViewEditButton clicked!");
   };
 
+  const linkSubmission = (cell,row) => {
+    const url = row.isClientEdit ? `/form/${row.formId}/submission/${row.submissionId}/edit`:`/form/${row.formId}/submission/${row.submissionId}`;
+    const buttonText = 'View/Edit'
+    const icon=row.isClientEdit? 'fa fa-edit' : 'fa fa-eye';
+    return (
+    <div onClick={()=> window.open(url, "_blank")}>
+          <span className="btn btn-primary btn-sm form-btn"><span><i
+            className={icon}/>&nbsp;</span>{buttonText}</span>
+    </div>
+    );
+  }
+
   function timeFormatter(cell) {
     // TODO: clean this up
     const cellFormatted = new Date(cell);
@@ -136,6 +149,7 @@ const TaskTable = React.memo(() => {
       dataField: partyName,
       text: "Party",
       sort: true,
+      style: {  minWidth: '200px'} 
     },
     {
       dataField: documentStatus,
@@ -174,14 +188,13 @@ const TaskTable = React.memo(() => {
       text: "Edited by",
     },
     {
-      formatter: ViewEditButton,
+      formatter: linkSubmission,
     },
   ];
 
   return (
     <>
       <BootstrapTable
-        classes="task-view-table"
         keyField="id"
         data={taskList}
         columns={columns}
