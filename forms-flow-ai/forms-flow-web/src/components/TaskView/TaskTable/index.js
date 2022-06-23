@@ -1,177 +1,173 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import utils from "formiojs/utils";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import "../TaskView.scss";
 
-import ServiceFlowTaskList from "../../ServiceFlow/list/ServiceTaskList";
-import ServiceFlowTaskDetails from "../../ServiceFlow/details/ServiceTaskDetails";
-import { Col, Container, Row } from "react-bootstrap";
-import "../../ServiceFlow/ServiceFlow.scss";
 import {
-    fetchFilterList,
-    fetchProcessDefinitionList,
-    fetchServiceTaskList,
-    getBPMGroups, getBPMTaskDetail
+  fetchFilterList,
+  fetchProcessDefinitionList,
+  fetchServiceTaskList,
 } from "../../../apiManager/services/bpmTaskServices";
-import { ALL_TASKS } from "../../ServiceFlow/constants/taskConstants";
 import {
-    reloadTaskFormSubmission,
-    setBPMFilterLoader,
-    setBPMTaskDetailLoader,
-    setFilterListParams,
-    setSelectedBPMFilter, setSelectedTaskID
+  setBPMTaskListActivePage,
+  setBPMTaskLoader,
+  setBPMFilterLoader,
 } from "../../../actions/bpmTaskActions";
-import TaskSortSelectedList from "../../ServiceFlow/list/sort/TaskSortSelectedList";
-import SocketIOService from "../../../services/SocketIOService";
-import isEqual from 'lodash/isEqual';
-import cloneDeep from 'lodash/cloneDeep';
-import { Route, Redirect } from "react-router-dom";
-import { push } from "connected-react-router";
 
-import "../../../styles.scss";
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-import BootstrapTable from 'react-bootstrap-table-next';
+import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
+import BootstrapTable from "react-bootstrap-table-next";
+import paginationFactory from "react-bootstrap-table2-paginator";
+import { Button } from "react-bootstrap";
+import { getLocalDateTime } from "../../../apiManager/services/formatterService";
+import { getoptions } from "./pagination";
+import { MAX_RESULTS } from "../../ServiceFlow/constants/taskConstants";
 
 const TaskTable = React.memo(() => {
+  const dispatch = useDispatch();
+  const taskList = useSelector((state) => state.bpmTasks.tasksList);
+  const tasksCount = useSelector((state) => state.bpmTasks.tasksCount);
+  const countPerPage = MAX_RESULTS;
+  const page = useSelector((state) => state.bpmTasks.activePage);
+  const selectedFilter = useSelector((state) => state.bpmTasks.selectedFilter);
+  const reqData = useSelector((state) => state.bpmTasks.listReqParams);
 
-    const dispatch = useDispatch();
-    const filterList = useSelector(state => state.bpmTasks.filterList);
-    const isFilterLoading = useSelector(state => state.bpmTasks.isFilterLoading);
-    const selectedFilter = useSelector(state => state.bpmTasks.selectedFilter);
-    const selectedFilterId = useSelector(state => state.bpmTasks.selectedFilter?.id || null);
-    const bpmTaskId = useSelector(state => state.bpmTasks.taskId);
-    const reqData = useSelector((state) => state.bpmTasks.listReqParams);
-    const sortParams = useSelector((state) => state.bpmTasks.filterListSortParams);
-    const searchParams = useSelector((state) => state.bpmTasks.filterListSearchParams);
-    const listReqParams = useSelector((state) => state.bpmTasks.listReqParams);
-    const currentUser = useSelector((state) => state.user?.userDetail?.preferred_username || '');
-    const firstResult = useSelector(state => state.bpmTasks.firstResult);
-    const taskList = useSelector((state) => state.bpmTasks.tasksList);
-    const selectedFilterIdRef = useRef(selectedFilterId);
-    const bpmTaskIdRef = useRef(bpmTaskId);
-    const reqDataRef = useRef(reqData);
-    const firstResultsRef = useRef(firstResult);
-    const taskListRef = useRef(taskList);
+  const useNoRenderRef = (currentValue) => {
+    const ref = useRef(currentValue);
+    ref.current = currentValue;
+    return ref;
+  };
+  const countPerPageRef = useNoRenderRef(countPerPage);
+  const currentPage = useNoRenderRef(page);
 
-    useEffect(() => {
-        selectedFilterIdRef.current = selectedFilterId;
-        bpmTaskIdRef.current = bpmTaskId;
-        reqDataRef.current = reqData;
-        firstResultsRef.current = firstResult;
-        taskListRef.current = taskList;
-    });
+  useEffect(() => {
+    dispatch(setBPMFilterLoader(true));
+    dispatch(fetchFilterList());
+    dispatch(fetchProcessDefinitionList());
+    // dispatch(fetchUserList());
+  }, [dispatch]);
 
-    useEffect(() => {
-        const reqParamData = { ...{ sorting: [...sortParams.sorting] }, ...searchParams };
-        if (!isEqual(reqParamData, listReqParams)) {
-            dispatch(setFilterListParams(cloneDeep(reqParamData)))
-        }
-    }, [searchParams, sortParams, dispatch, listReqParams])
-
-    useEffect(() => {
-        dispatch(setBPMFilterLoader(true));
-        dispatch(fetchFilterList());
-        dispatch(fetchProcessDefinitionList());
-        // dispatch(fetchUserList());
-    }, [dispatch]);
-
-    useEffect(() => {
-        if (!isFilterLoading && filterList.length && !selectedFilter) {
-            let filterSelected;
-            if (filterList.length > 1) {
-                filterSelected = filterList.find(filter => filter.name === ALL_TASKS);
-                if (!filterSelected) {
-                    filterSelected = filterList[0];
-                }
-            } else {
-                filterSelected = filterList[0];
-            }
-            dispatch(setSelectedBPMFilter(filterSelected));
-        }
-    }, [filterList, isFilterLoading, selectedFilter, dispatch]);
-
-    const checkIfTaskIDExistsInList = (list, id) => {
-        return list.some(task => task.id === id);
-    }
-    const SocketIOCallback = useCallback((refreshedTaskId, forceReload, isUpdateEvent) => {
-        if (forceReload) {
-            dispatch(fetchServiceTaskList(selectedFilterIdRef.current, firstResultsRef.current, reqDataRef.current, refreshedTaskId)); //Refreshes the Tasks
-            if (bpmTaskIdRef.current && refreshedTaskId === bpmTaskIdRef.current) {
-                dispatch(setBPMTaskDetailLoader(true));
-                dispatch(setSelectedTaskID(null)); // unSelect the Task Selected
-                dispatch(push(`/task/`));
-            }
-        } else {
-            if (selectedFilterIdRef.current) {
-                if (isUpdateEvent) {
-                    /* Check if the taskId exists in the loaded Task List */
-                    if (checkIfTaskIDExistsInList(taskListRef.current, refreshedTaskId) === true) {
-                        dispatch(fetchServiceTaskList(selectedFilterIdRef.current, firstResultsRef.current, reqDataRef.current)); //Refreshes the Task
-                    }
-                } else {
-                    dispatch(fetchServiceTaskList(selectedFilterIdRef.current, firstResultsRef.current, reqDataRef.current)); //Refreshes the Task
-                }
-            }
-            if (bpmTaskIdRef.current && refreshedTaskId === bpmTaskIdRef.current) { //Refreshes task if its selected
-                dispatch(getBPMTaskDetail(bpmTaskIdRef.current, (err, resTask) => {
-                    // Should dispatch When task claimed user  is not the logged in User
-                    if (resTask?.assignee !== currentUser) {
-                        dispatch(reloadTaskFormSubmission(true));
-                    }
-                }));
-                dispatch(getBPMGroups(bpmTaskIdRef.current));
-            }
-        }
-    }
-        , [dispatch, currentUser]);
-
-    useEffect(() => {
-        if (!SocketIOService.isConnected()) {
-            SocketIOService.connect((refreshedTaskId, forceReload, isUpdateEvent) => SocketIOCallback(refreshedTaskId, forceReload, isUpdateEvent));
-        } else {
-            SocketIOService.disconnect();
-            SocketIOService.connect((refreshedTaskId, forceReload, isUpdateEvent) => SocketIOCallback(refreshedTaskId, forceReload, isUpdateEvent));
-        }
-        return () => {
-            if (SocketIOService.isConnected())
-                SocketIOService.disconnect();
-        }
-    }, [SocketIOCallback, dispatch]);
-
-
-    // TODO: Refactor to not use hardcoded values (_embedded.variable[1].value)
-    // TODO: Move to Table component
-    const columns = [{
-        dataField: '_embedded.variable[1].value',
-        text: 'Party'
-    }, {
-        dataField: '_embedded.variable[5].value',
-        text: 'Court Tribunal File #'
-    }, {
-        dataField: '_embedded.variable[0].value',
-        text: 'Status'
-    }, {
-        dataField: '_embedded.variable[2].value',
-        text: 'Criminal?'
-    }, {
-        dataField: '_embedded.variable[4].value',
-        text: 'Responsibility'
-    }, {
-        dataField: '_embedded.variable[6].value',
-        text: 'Date Served'
-    }, {
-        dataField: '_embedded.variable[3].value',
-        text: 'Next Appearance Date'
-    }];
-
-
-    return (
-        <>
-        <BootstrapTable keyField='id' data={taskList} columns={columns} />
-
-        {/* This component renders the data?? */}
-        <ServiceFlowTaskList />
-        </>
+  useEffect(() => {
+    dispatch(
+      fetchServiceTaskList(currentPage.current, countPerPageRef.current)
     );
+  }, [dispatch, currentPage, countPerPageRef]);
+
+  const handlePageChange = (type, newState) => {
+    if (type === "filter") {
+      //setfiltermode(true)
+    } else if (type === "pagination") {
+      if (countPerPage > 5) {
+        dispatch(setBPMTaskLoader(true));
+      } else {
+        //setIsLoading(true)
+      }
+    }
+    //dispatch(setCountPerpage(newState.sizePerPage));
+    //dispatch(FilterApplications(newState));
+    dispatch(setBPMTaskListActivePage(newState.page));
+  };
+
+  // TODO: Make this an enum? or some sort of data structure?
+  const documentStatus = "_embedded.variable[0].value";
+  const partyName = "_embedded.variable[1].value";
+  const isCriminal = "_embedded.variable[2].value";
+  const nextAppearanceDate = "_embedded.variable[3].value";
+  const staffGroup = "_embedded.variable[4].value";
+  const courtOrTribunalFileNbr = "_embedded.variable[5].value";
+  const servedDate = "_embedded.variable[6].value";
+
+  useEffect(() => {
+    if (selectedFilter) {
+      dispatch(setBPMTaskLoader(true));
+      dispatch(setBPMTaskListActivePage(1));
+      dispatch(fetchServiceTaskList(selectedFilter.id, 0, reqData));
+    }
+  }, [dispatch, selectedFilter, reqData]);
+
+  const ViewEditButton = (cell, row, rowIndex, formatExtraData) => {
+    return (
+      <Button
+        onClick={() => {
+          onViewEditChanged(row);
+        }}
+      >
+        View/Edit
+      </Button>
+    );
+  };
+
+  // TODO: implement
+  const onViewEditChanged = () => {
+    console.log("ViewEditButton clicked!");
+  };
+
+  function timeFormatter(cell) {
+    const localdate = getLocalDateTime(cell);
+    return <label title={cell}>{localdate}</label>;
+  }
+
+  // TODO: Move to Table component
+  const columns = [
+    {
+      dataField: partyName,
+      text: "Party",
+      sort: true,
+    },
+    {
+      dataField: documentStatus,
+      text: "Status",
+      sort: true,
+    },
+    {
+      dataField: staffGroup,
+      text: "Responsibility",
+      sort: true,
+    },
+    {
+      dataField: isCriminal,
+      text: "Criminal?",
+      sort: true,
+    },
+    {
+      dataField: courtOrTribunalFileNbr,
+      text: "Court Tribunal File #",
+      sort: true,
+    },
+    {
+      dataField: servedDate,
+      text: "Date Served",
+      sort: true,
+      formatter: timeFormatter,
+    },
+    {
+      dataField: nextAppearanceDate,
+      text: "Next Appearance Date",
+      sort: true,
+    },
+    {
+      dataField: "assignee",
+      text: "Edited by",
+    },
+    {
+      formatter: ViewEditButton,
+    },
+  ];
+
+  return (
+    <>
+      <BootstrapTable
+        keyField="id"
+        data={taskList}
+        columns={columns}
+        striped
+        hover
+        bordered={false}
+        pagination={paginationFactory(
+          getoptions(tasksCount, page, countPerPage)
+        )}
+        onTableChange={handlePageChange}
+      />
+    </>
+  );
 });
 
 export default TaskTable;
