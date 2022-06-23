@@ -20,7 +20,6 @@ import { Button } from "react-bootstrap";
 import { getLocalDateTime } from "../../../apiManager/services/formatterService";
 import { getoptions } from "./pagination";
 import { MAX_RESULTS } from "../../ServiceFlow/constants/taskConstants";
-import Loading from "../../../containers/Loading";
 
 const TaskTable = React.memo(() => {
   const dispatch = useDispatch();
@@ -31,15 +30,14 @@ const TaskTable = React.memo(() => {
   const selectedFilter = useSelector((state) => state.bpmTasks.selectedFilter);
   const reqData = useSelector((state) => state.bpmTasks.listReqParams);
 
+  /*
+  // TODO: Implement isLoading
   const [isLoading, setIsLoading] = React.useState(false);
   useEffect(() => {
     setIsLoading(false);
   }, [taskList]);
-  /*
-  useEffect(() => {
-    dispatch(getAllApplicationStatus());
-  }, [dispatch]);
   */
+
   const getNoDataIndicationContent = () => {
     return (
       <div className="div-no-tasks">
@@ -82,7 +80,7 @@ const TaskTable = React.memo(() => {
       if (countPerPage > 5) {
         dispatch(setBPMTaskLoader(true));
       } else {
-        setIsLoading(true)
+        //setIsLoading(true)
       }
     }
     //dispatch(setCountPerpage(newState.sizePerPage));
@@ -125,6 +123,9 @@ const TaskTable = React.memo(() => {
   };
 
   function timeFormatter(cell) {
+    // TODO: clean this up
+    const cellFormatted = new Date(cell);
+    cell = cellFormatted.toISOString().replace('T', ' ').replace('Z', '');
     const localdate = getLocalDateTime(cell);
     return <label title={cell}>{localdate}</label>;
   }
@@ -166,6 +167,7 @@ const TaskTable = React.memo(() => {
       dataField: nextAppearanceDate,
       text: "Next Appearance Date",
       sort: true,
+      formatter: timeFormatter,
     },
     {
       dataField: "assignee",
@@ -189,7 +191,7 @@ const TaskTable = React.memo(() => {
         pagination={paginationFactory(
           getoptions(tasksCount, page, countPerPage)
         )}
-        noDataIndication={() => !isLoading && getNoDataIndicationContent()}
+        noDataIndication={() => getNoDataIndicationContent()}
         onTableChange={handlePageChange}
       />
     </>
