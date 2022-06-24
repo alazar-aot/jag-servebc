@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import "../TaskView.scss";
-import {AWAITING_ACKNOWLEDGEMENT} from "../../../constants/applicationConstants";
 import {
   fetchFilterList,
   fetchProcessDefinitionList,
@@ -22,6 +20,13 @@ import { getLocalDateTime } from "../../../apiManager/services/formatterService"
 import { getoptions } from "./pagination";
 import { MAX_RESULTS } from "../../ServiceFlow/constants/taskConstants";
 
+// To show application
+import ServiceFlowTaskDetails from "../../ServiceFlow/details/ServiceTaskDetails";
+import ServiceFlowTaskList from "../../ServiceFlow/list/ServiceTaskList";
+import { Container } from "react-bootstrap";
+import {Route, Redirect} from "react-router-dom";
+import {push} from "connected-react-router";
+
 const TaskTable = React.memo(() => {
   const dispatch = useDispatch();
   const taskList = useSelector((state) => state.bpmTasks.tasksList);
@@ -30,6 +35,7 @@ const TaskTable = React.memo(() => {
   const page = useSelector((state) => state.bpmTasks.activePage);
   const selectedFilter = useSelector((state) => state.bpmTasks.selectedFilter);
   const reqData = useSelector((state) => state.bpmTasks.listReqParams);
+  const [showApplication, setShowApplication] = React.useState(false);
 
   /*
   // TODO: Implement isLoading
@@ -53,6 +59,7 @@ const TaskTable = React.memo(() => {
     );
   };
 
+  // Pagination
   const useNoRenderRef = (currentValue) => {
     const ref = useRef(currentValue);
     ref.current = currentValue;
@@ -118,27 +125,30 @@ const TaskTable = React.memo(() => {
     );
   };
 
-  // TODO: implement
-  const onViewEditChanged = () => {
-    console.log("ViewEditButton clicked!");
+  // Show application
+  const bpmTaskId = useSelector(state => state.bpmTasks.taskId);
+  const getTaskDetails = (taskId) => {
+    if(taskId!==bpmTaskId){
+      dispatch(push(`/task_new/${taskId}`));
+    }
   };
 
-  const linkSubmission = (cell,row) => {
-    const url = row.isClientEdit ? `/form/${row.formId}/submission/${row.submissionId}/edit`:`/form/${row.formId}/submission/${row.submissionId}`;
-    const buttonText = 'View/Edit'
-    const icon=row.isClientEdit? 'fa fa-edit' : 'fa fa-eye';
-    return (
-    <div onClick={()=> window.open(url, "_blank")}>
-          <span className="btn btn-primary btn-sm form-btn"><span><i
-            className={icon}/>&nbsp;</span>{buttonText}</span>
-    </div>
-    );
-  }
+  const onViewEditChanged = (row) => {
+    console.log("ViewEditButton clicked!");
+    console.log(row.id);
+    getTaskDetails(row.id)
+    setShowApplication(true);
+  };
+
+  const onClickBackButton = () => {
+    dispatch(push(`/task_new`));
+    setShowApplication(false);
+  };
 
   function timeFormatter(cell) {
     // TODO: clean this up
     const cellFormatted = new Date(cell);
-    cell = cellFormatted.toISOString().replace('T', ' ').replace('Z', '');
+    cell = cellFormatted.toISOString().replace("T", " ").replace("Z", "");
     const localdate = getLocalDateTime(cell);
     return <label title={cell}>{localdate}</label>;
   }
@@ -149,7 +159,7 @@ const TaskTable = React.memo(() => {
       dataField: partyName,
       text: "Party",
       sort: true,
-      style: {  minWidth: '200px'} 
+      style: { minWidth: "200px" },
     },
     {
       dataField: documentStatus,
@@ -188,26 +198,28 @@ const TaskTable = React.memo(() => {
       text: "Edited by",
     },
     {
-      formatter: linkSubmission,
+      formatter: ViewEditButton,
     },
   ];
 
-  return (
-    <>
-      <BootstrapTable
-        keyField="id"
-        data={taskList}
-        columns={columns}
-        striped
-        hover
-        bordered={false}
-        pagination={paginationFactory(
-          getoptions(tasksCount, page, countPerPage)
-        )}
-        noDataIndication={() => getNoDataIndicationContent()}
-        onTableChange={handlePageChange}
-      />
-    </>
+  return !showApplication ? (
+    <BootstrapTable
+      keyField="id"
+      data={taskList}
+      columns={columns}
+      striped
+      hover
+      bordered={false}
+      pagination={paginationFactory(getoptions(tasksCount, page, countPerPage))}
+      noDataIndication={() => getNoDataIndicationContent()}
+      onTableChange={handlePageChange}
+    />
+  ) : (
+    <Container fluid id="main">
+      <Button onClick={onClickBackButton}>Back</Button>
+      <Route path={"/task_new/:taskId?"}><ServiceFlowTaskDetails/></Route>
+      <Route path={"/task_new/:taskId/:notAvailable"}> <Redirect exact to='/404'/></Route>
+    </Container>
   );
 });
 
