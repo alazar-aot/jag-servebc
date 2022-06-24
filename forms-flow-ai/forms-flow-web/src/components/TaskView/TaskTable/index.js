@@ -24,8 +24,9 @@ import { MAX_RESULTS } from "../../ServiceFlow/constants/taskConstants";
 import ServiceFlowTaskDetails from "../../ServiceFlow/details/ServiceTaskDetails";
 import ServiceFlowTaskList from "../../ServiceFlow/list/ServiceTaskList";
 import { Container } from "react-bootstrap";
-import {Route, Redirect} from "react-router-dom";
-import {push} from "connected-react-router";
+import { Route, Redirect } from "react-router-dom";
+import { push } from "connected-react-router";
+import { filter } from "lodash";
 
 const TaskTable = React.memo(() => {
   const dispatch = useDispatch();
@@ -37,6 +38,15 @@ const TaskTable = React.memo(() => {
   const reqData = useSelector((state) => state.bpmTasks.listReqParams);
   const [showApplication, setShowApplication] = React.useState(false);
 
+  // TODO: Make this an enum? or some sort of data structure?
+  const documentStatus = "_embedded.variable[0].value";
+  const partyName = "_embedded.variable[1].value";
+  const isCriminal = "_embedded.variable[2].value";
+  const nextAppearanceDate = "_embedded.variable[3].value";
+  const staffGroup = "_embedded.variable[4].value";
+  const courtOrTribunalFileNbr = "_embedded.variable[5].value";
+  const servedDate = "_embedded.variable[6].value";
+
   /*
   // TODO: Implement isLoading
   const [isLoading, setIsLoading] = React.useState(false);
@@ -44,6 +54,28 @@ const TaskTable = React.memo(() => {
     setIsLoading(false);
   }, [taskList]);
   */
+
+  // Filter tasks to see if the form is Serve Legal Documents
+  // TODO: Clean up
+  const [taskServeLegalDocs, setTaskServeLegalDocs] = React.useState([]);
+  useEffect(() => {
+    let filteredTasks = taskList.filter((t, index) => {
+      if (
+        t._embedded.variable[0] != null &&
+        (t._embedded.variable[0].name === "documentStatus" ||
+          t._embedded.variable[0].name === "partyName" ||
+          t._embedded.variable[0].name === "isCriminal" ||
+          t._embedded.variable[0].name === "nextAppearanceDate" ||
+          t._embedded.variable[0].name === "staffGroup" ||
+          t._embedded.variable[0].name === "courtOrTribunalFileNbr" ||
+          t._embedded.variable[0].name === "servedDate")
+      ) {
+        return t;
+      }
+    });
+    //console.log(filteredTasks);
+    setTaskServeLegalDocs(filteredTasks);
+  }, [taskList]);
 
   const getNoDataIndicationContent = () => {
     return (
@@ -96,15 +128,6 @@ const TaskTable = React.memo(() => {
     dispatch(setBPMTaskListActivePage(newState.page));
   };
 
-  // TODO: Make this an enum? or some sort of data structure?
-  const documentStatus = "_embedded.variable[0].value";
-  const partyName = "_embedded.variable[1].value";
-  const isCriminal = "_embedded.variable[2].value";
-  const nextAppearanceDate = "_embedded.variable[3].value";
-  const staffGroup = "_embedded.variable[4].value";
-  const courtOrTribunalFileNbr = "_embedded.variable[5].value";
-  const servedDate = "_embedded.variable[6].value";
-
   useEffect(() => {
     if (selectedFilter) {
       dispatch(setBPMTaskLoader(true));
@@ -126,9 +149,9 @@ const TaskTable = React.memo(() => {
   };
 
   // Show application
-  const bpmTaskId = useSelector(state => state.bpmTasks.taskId);
+  const bpmTaskId = useSelector((state) => state.bpmTasks.taskId);
   const getTaskDetails = (taskId) => {
-    if(taskId!==bpmTaskId){
+    if (taskId !== bpmTaskId) {
       dispatch(push(`/task_new/${taskId}`));
     }
   };
@@ -136,7 +159,7 @@ const TaskTable = React.memo(() => {
   const onViewEditChanged = (row) => {
     console.log("ViewEditButton clicked!");
     console.log(row.id);
-    getTaskDetails(row.id)
+    getTaskDetails(row.id);
     setShowApplication(true);
   };
 
@@ -205,7 +228,7 @@ const TaskTable = React.memo(() => {
   return !showApplication ? (
     <BootstrapTable
       keyField="id"
-      data={taskList}
+      data={taskServeLegalDocs}
       columns={columns}
       striped
       hover
@@ -217,8 +240,13 @@ const TaskTable = React.memo(() => {
   ) : (
     <Container fluid id="main">
       <Button onClick={onClickBackButton}>Back</Button>
-      <Route path={"/task_new/:taskId?"}><ServiceFlowTaskDetails/></Route>
-      <Route path={"/task_new/:taskId/:notAvailable"}> <Redirect exact to='/404'/></Route>
+      <Route path={"/task_new/:taskId?"}>
+        <ServiceFlowTaskDetails />
+      </Route>
+      <Route path={"/task_new/:taskId/:notAvailable"}>
+        {" "}
+        <Redirect exact to="/404" />
+      </Route>
     </Container>
   );
 });
