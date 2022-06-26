@@ -38,9 +38,6 @@ export default React.memo(() => {
       <div className="flex-container">
         <div className="flex-item-left">
           <div style={{ display: "flex" }}>
-            <h3 className="task-head" style={{ marginTop: "3px" }}>
-              <i className="fa fa-cogs" aria-hidden="true" />
-            </h3>
             <h3 className="task-head">
               {" "}
               <span className="forms-text" style={{ marginLeft: "1px" }}>
