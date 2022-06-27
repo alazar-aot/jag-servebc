@@ -21,6 +21,9 @@ const ServiceFilter = React.memo(() => {
 
   const [currentTab, setCurrentTab] = useState("All tasks"); // by default use the all task tab
 
+  const selectedFilter = useSelector((state) => state.bpmTasks.selectedFilter);
+
+
   // Call the API to update the store's list of filters from Camunda
   // This populates the filterList array in the store with any filters defined in Camunda
   useEffect(() => {
@@ -67,28 +70,27 @@ const ServiceFilter = React.memo(() => {
   const handleTabSelect = (selectedTabName) => {
 
     // Get the correct filter object matching the selected tab name
-    var selectedFilter = temporaryFilterList.filter((x) => x.name == selectedTabName);
-    // console.log("selectedFilter", selectedFilter);
+    var newFilter = temporaryFilterList.filter((x) => x.name == selectedTabName);
     
     // Update current filter
-    setCurrentFilter(selectedFilter);
+    setCurrentFilter(newFilter);
 
     // Update Selected Tab
-    setCurrentTab(selectedFilter);
+    setCurrentTab(newFilter);
 
     // Update State Selected Filter
-    dispatch(setSelectedBPMFilter(selectedFilter));
+    dispatch(setSelectedBPMFilter(newFilter));
   };
 
   useEffect(() => {
-    // console.log("Current Filter: ", currentFilter);
-  }, [currentFilter]);
-
+    console.log(("**** RENDER **** \n**** RENDER **** "))
+  }, [selectedFilter]);
 
 
   // ---- TAB PERSISTENCE START ----
 
   // Figure out which tab is currently set as active (only triggers on page reload)
+
   // useEffect(() => {
   //   const getActiveTab = JSON.parse(localStorage.getItem("activeTab"));
   //   if (getActiveTab) {
@@ -96,20 +98,17 @@ const ServiceFilter = React.memo(() => {
   //   }
   // }, []);
 
-  // // Set that tab as active on page reload, and update the filter to match
+  // Set that tab as active on page reload, and update the filter to match
+
   // useEffect(() => {
-  //   localStorage.setItem("activeTab", JSON.stringify(currentTab));
-  //   setCurrentFilter(currentTab);
-  //   // console.log("Current Tab: ", currentTab);
-  // }, [currentTab]);
+    // localStorage.setItem("activeTab", JSON.stringify(currentTab));
+    // setCurrentFilter(currentTab);
+    // setCurrentTab(currentTab);
+    // console.log("Current Tab: ", currentTab);
+  // }, [currentTab, currentFilter]);
 
   // ---- TAB PERSISTENCE END ----
 
-
-  // console.log(
-  //   "State Filter: ",
-  //   useSelector((state) => state.bpmTasks.selectedFilter)
-  // );
 
   return (
     <>

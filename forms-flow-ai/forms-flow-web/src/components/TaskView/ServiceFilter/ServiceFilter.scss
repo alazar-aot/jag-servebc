@@ -1,20 +1,16 @@
-.nav-tab {
-  color: #234075;
+.nav-tabs .nav-link{
+  color: #003366;
   
 }
 
 
-.nav-tabs:active {
-  border-bottom: 20px solid yellow;
-  border-radius: 0px;
-}
-
-.nav-link.active{
+.nav-tabs .nav-link.active{
+  color: #003366;
   font-weight: bold;
-  color: #234075;
-  border-bottom: 20px solid #e3a82b;
-}
+  text-decoration: underline;
+  border-bottom: 6px solid #e3a82b !important;
+  border-top: 1px solid grey !important;
+  border-left: 1px solid grey !important;
+  border-right: 1px solid grey !important;
 
-// .nav-tabs:hover{
-//     color: color:gray
-// }
+}
