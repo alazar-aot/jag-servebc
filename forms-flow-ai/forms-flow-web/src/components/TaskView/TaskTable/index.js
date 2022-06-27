@@ -11,6 +11,7 @@ import {
   setBPMTaskLoader,
   setBPMFilterLoader,
 } from "../../../actions/bpmTaskActions";
+import Loading from "../../../containers/Loading";
 
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import BootstrapTable from "react-bootstrap-table-next";
@@ -20,23 +21,21 @@ import { getLocalDateTime } from "../../../apiManager/services/formatterService"
 import { getoptions } from "./pagination";
 import { MAX_RESULTS } from "../../ServiceFlow/constants/taskConstants";
 
-// To show application
-import ServiceFlowTaskDetails from "../../ServiceFlow/details/ServiceTaskDetails";
-import ServiceFlowTaskList from "../../ServiceFlow/list/ServiceTaskList";
-import { Container } from "react-bootstrap";
-import { Route, Redirect } from "react-router-dom";
 import { push } from "connected-react-router";
-import { filter } from "lodash";
 
-const TaskTable = React.memo(() => {
+const TaskTable = React.memo(({showApplicationSetter}) => {
   const dispatch = useDispatch();
   const taskList = useSelector((state) => state.bpmTasks.tasksList);
-  const tasksCount = useSelector((state) => state.bpmTasks.tasksCount);
+  //const tasksCount = useSelector((state) => state.bpmTasks.tasksCount);
   const countPerPage = MAX_RESULTS;
   const page = useSelector((state) => state.bpmTasks.activePage);
   const selectedFilter = useSelector((state) => state.bpmTasks.selectedFilter);
   const reqData = useSelector((state) => state.bpmTasks.listReqParams);
   const [showApplication, setShowApplication] = React.useState(false);
+
+  useEffect(() => {
+    showApplicationSetter(showApplication);
+  }, [showApplicationSetter, showApplication]);
 
   // TODO: Make this an enum? or some sort of data structure?
   const documentStatus = "_embedded.variable[0].value";
@@ -47,34 +46,33 @@ const TaskTable = React.memo(() => {
   const courtOrTribunalFileNbr = "_embedded.variable[5].value";
   const servedDate = "_embedded.variable[6].value";
 
-  /*
-  // TODO: Implement isLoading
+  // Only render tasks that are related to the Serve Legal Documents Form
+  const [taskServeLegalDocs, setTaskServeLegalDocs] = React.useState([]);
+  const [taskServeLegalDocsCount, setTaskServeLegalDocsCount] = React.useState(0);
+  useEffect(() => {
+    // filter task list for Serve Legal Document related tasks
+    let filteredTasks = taskList.filter((t) => {
+      // filter task variables
+      let taskVariableList = t._embedded.variable.filter((v) => {
+        return (
+          v.name === "documentStatus" ||
+          v.name === "partyName" ||
+          v.name === "isCriminal" ||
+          v.name === "nextAppearanceDate" ||
+          v.name === "staffGroup" ||
+          v.name === "courtOrTribunalFileNbr" ||
+          v.name === "servedDate"
+        );
+      });
+      return taskVariableList.length > 0;
+    });
+    setTaskServeLegalDocs(filteredTasks);
+    setTaskServeLegalDocsCount(filteredTasks.length);
+  }, [taskList]);
+
   const [isLoading, setIsLoading] = React.useState(false);
   useEffect(() => {
     setIsLoading(false);
-  }, [taskList]);
-  */
-
-  // Filter tasks to see if the form is Serve Legal Documents
-  // TODO: Clean up
-  const [taskServeLegalDocs, setTaskServeLegalDocs] = React.useState([]);
-  useEffect(() => {
-    let filteredTasks = taskList.filter((t, index) => {
-      if (
-        t._embedded.variable[0] != null &&
-        (t._embedded.variable[0].name === "documentStatus" ||
-          t._embedded.variable[0].name === "partyName" ||
-          t._embedded.variable[0].name === "isCriminal" ||
-          t._embedded.variable[0].name === "nextAppearanceDate" ||
-          t._embedded.variable[0].name === "staffGroup" ||
-          t._embedded.variable[0].name === "courtOrTribunalFileNbr" ||
-          t._embedded.variable[0].name === "servedDate")
-      ) {
-        return t;
-      }
-    });
-    //console.log(filteredTasks);
-    setTaskServeLegalDocs(filteredTasks);
   }, [taskList]);
 
   const getNoDataIndicationContent = () => {
@@ -120,7 +118,7 @@ const TaskTable = React.memo(() => {
       if (countPerPage > 5) {
         dispatch(setBPMTaskLoader(true));
       } else {
-        //setIsLoading(true)
+        setIsLoading(true);
       }
     }
     //dispatch(setCountPerpage(newState.sizePerPage));
@@ -163,20 +161,12 @@ const TaskTable = React.memo(() => {
     setShowApplication(true);
   };
 
-  const onClickBackButton = () => {
-    dispatch(push(`/task_new`));
-    setShowApplication(false);
-  };
-
   function timeFormatter(cell) {
-    // TODO: clean this up
-    const cellFormatted = new Date(cell);
-    cell = cellFormatted.toISOString().replace("T", " ").replace("Z", "");
-    const localdate = getLocalDateTime(cell);
+    cell = new Date(cell);
+    const localdate = getLocalDateTime(cell.toISOString().replace("T", " ").replace("Z", ""));
     return <label title={cell}>{localdate}</label>;
   }
 
-  // TODO: Move to Table component
   const columns = [
     {
       dataField: partyName,
@@ -225,30 +215,26 @@ const TaskTable = React.memo(() => {
     },
   ];
 
-  return !showApplication ? (
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  return (
     <BootstrapTable
       keyField="id"
+      loading={isLoading}
       data={taskServeLegalDocs}
       columns={columns}
       striped
       hover
       bordered={false}
-      pagination={paginationFactory(getoptions(tasksCount, page, countPerPage))}
-      noDataIndication={() => getNoDataIndicationContent()}
+      pagination={paginationFactory(
+        getoptions(taskServeLegalDocsCount, page, countPerPage)
+      )}
+      noDataIndication={() => !isLoading && getNoDataIndicationContent()}
       onTableChange={handlePageChange}
     />
-  ) : (
-    <Container fluid id="main">
-      <Button onClick={onClickBackButton}>Back</Button>
-      <Route path={"/task_new/:taskId?"}>
-        <ServiceFlowTaskDetails />
-      </Route>
-      <Route path={"/task_new/:taskId/:notAvailable"}>
-        {" "}
-        <Redirect exact to="/404" />
-      </Route>
-    </Container>
-  );
+  )
 });
 
 export default TaskTable;
