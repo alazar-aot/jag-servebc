@@ -4,9 +4,9 @@ import { Tabs, Tab } from "react-bootstrap";
 
 import {
     // fetchServiceTaskList,
-    // fetchFilterList,
-    // setBPMFilterLoader,
-    // fetchProcessDefinitionList,
+    fetchFilterList,
+    setBPMFilterLoader,
+    fetchProcessDefinitionList,
 } from "../../../apiManager/services/bpmTaskServices";
 
 import {
@@ -22,12 +22,18 @@ const ServiceFilter = React.memo(() => {
 
     const [currentTab, setCurrentTab] = useState("All tasks");       // by default use the all task tab
 
-    // console.log("CURRENT FILTER: ", currentFilter);
+
+    // Call the API to update the store's list of filters from Camunda
+    // This populates the filterList array in the store with any filters defined in Camunda
+    useEffect(()=>{
+        dispatch(setBPMFilterLoader(true));
+        dispatch(fetchFilterList());
+        dispatch(fetchProcessDefinitionList());
+    },[dispatch]);
 
 
     // Get list of filters
     // const filterList = useSelector(state=> state.bpmTasks.filterList);
-    // console.log('1', filterList);
 
     const temporaryFilterList = [
         {
@@ -56,7 +62,6 @@ const ServiceFilter = React.memo(() => {
     // Define function to handle tab selection
     // x contains the name of the tab/filter (eg. "Joint tasks")
     const handleTabSelect = (x) => {
-        // console.log('2', x);
         
         // Update current filter
         setCurrentFilter(x); 
@@ -65,13 +70,10 @@ const ServiceFilter = React.memo(() => {
         setCurrentTab(x);
 
         // Update State Selected Filter
-        dispatch(setSelectedBPMFilter(currentFilter));
+        dispatch(setSelectedBPMFilter(x));
 
     }
 
-    
-    // const selectedFilter = useSelector(state=> state.bpmTasks.selectedFilter);
-    // console.log('Selected Filter: ' , useSelector(state=> state.bpmTasks.selectedFilter));
 
     useEffect(() => {
         console.log('Current Filter: ', currentFilter);
@@ -91,14 +93,19 @@ const ServiceFilter = React.memo(() => {
         }
     }, []);
 
-    // Set that tab as active on page reload
+
+    // Set that tab as active on page reload, and update the filter to match
     useEffect(() => {
         localStorage.setItem("activeTab", JSON.stringify(currentTab));
+        setCurrentFilter(currentTab);
         console.log('Current Tab: ', currentTab)
     }, [currentTab]);
 
     // ---- TAB PERSISTENCE END ----
 
+
+    // const selectedFilter = useSelector(state=> state.bpmTasks.selectedFilter);
+    console.log('State Filter: ' , useSelector(state=> state.bpmTasks.selectedFilter));
 
 
     return (
@@ -117,5 +124,3 @@ const ServiceFilter = React.memo(() => {
 });
 
 export default ServiceFilter;
-
-// onSelect={(k) => setCurrentTab(k)}
