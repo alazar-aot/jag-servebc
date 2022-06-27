@@ -4,7 +4,9 @@ const DropdownFilter = (props) => {
   return (
     <span className="SearchControl">
       <div>
-        <span>Criminal Status</span>
+        <span>
+          <b>{props.label}</b>
+        </span>
       </div>
       <div>
         <select
@@ -12,13 +14,13 @@ const DropdownFilter = (props) => {
           ref={props.criminalStatusRef}
           onChange={props.handleSelectChagne}
         >
-          <option key="0" value=""></option>
-          <option key="1" value="Yes">
-            Yes
-          </option>
-          <option key="2" value="No">
-            No
-          </option>
+          {props.options.map((x) => {
+            return (
+              <option key={x.id} value={x.value}>
+                {x.name}
+              </option>
+            );
+          })}
         </select>
       </div>
     </span>

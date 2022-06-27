@@ -4,9 +4,11 @@ const TextSearch = (props) => {
   return (
     <span className="SearchControl">
       <div>
-        <span>Party name</span>
+        <span>
+          <b>{props.label}</b>
+        </span>
       </div>
-      <div>
+      <div className="fullbox">
         <input
           ref={props.searchRef}
           type="text"

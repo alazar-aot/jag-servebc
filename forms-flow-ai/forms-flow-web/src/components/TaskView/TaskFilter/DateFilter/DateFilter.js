@@ -4,7 +4,9 @@ const DateFilter = (props) => {
   return (
     <span className="SearchControl">
       <div>
-        <span>Serve Date (From):</span>
+        <span>
+          <b>{props.label}</b>
+        </span>
       </div>
       <div>
         <input
