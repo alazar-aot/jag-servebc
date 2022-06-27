@@ -17,7 +17,6 @@ import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import { Button } from "react-bootstrap";
-import { getLocalDateTime } from "../../../apiManager/services/formatterService";
 import { getoptions } from "./pagination";
 import { MAX_RESULTS } from "../../ServiceFlow/constants/taskConstants";
 
@@ -138,6 +137,7 @@ const TaskTable = React.memo(({ showApplicationSetter }) => {
   const ViewEditButton = (cell, row, rowIndex, formatExtraData) => {
     return (
       <Button
+        className="button-view-edit"
         onClick={() => {
           onViewEditChanged(row);
         }}
@@ -163,10 +163,13 @@ const TaskTable = React.memo(({ showApplicationSetter }) => {
   };
 
   function timeFormatter(cell) {
-    cell = new Date(cell);
-    const localdate = getLocalDateTime(
-      cell.toISOString().replace("T", " ").replace("Z", "")
-    );
+
+    const date = new Date(cell);
+    const year = date.getFullYear();
+    const month = date.toLocaleString('en-US', {month: 'short'});
+    const day = date.getDate();
+    const localdate = year + "/" + month.toUpperCase() + "/" + day;
+
     return <label title={cell}>{localdate}</label>;
   }
 

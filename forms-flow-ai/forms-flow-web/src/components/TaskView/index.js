@@ -19,7 +19,6 @@ import ServiceFlowTaskDetails from "../ServiceFlow/details/ServiceTaskDetails";
 import { Container } from "react-bootstrap";
 import { Route, Redirect } from "react-router-dom";
 import { push } from "connected-react-router";
-import { Button } from "react-bootstrap";
 
 import isEqual from "lodash/isEqual";
 import cloneDeep from "lodash/cloneDeep";
@@ -129,6 +128,7 @@ export default React.memo(() => {
         <div className="container-task-view">
           <div style={{ marginTop: "20px", marginBottom: "20px" }}>
             <a
+              href="#/"
               className="text-primary"
               style={{ cursor: "pointer" }}
               onClick={onClickBackButton}
