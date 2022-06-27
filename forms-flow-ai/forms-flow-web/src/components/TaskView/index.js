@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-
+import "./TaskView.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { ALL_TASKS } from "../ServiceFlow/constants/taskConstants";
 import {
@@ -98,43 +98,61 @@ export default React.memo(() => {
     }
   }, [filterList, isFilterLoading, selectedFilter, dispatch]);
 
-  return !showApplication ? (
-    <div className="container" id="main">
-      {/* Task Title */}
-      <div className="flex-container">
-        <div className="flex-item-left">
-          <div style={{ display: "flex" }}>
-            <h3 className="task-head" style={{ marginTop: "3px" }}>
+  return (
+    <>
+      {!showApplication ? (
+        <div className="container-task-view">
+          {/* Task Title */}
+          <div className="flex-container">
+            <div className="flex-item-left">
+              <div style={{ display: "flex" }}>
+                {/*<h3 className="task-head" style={{ marginTop: "3px" }}>
               <i className="fa fa-cogs" aria-hidden="true" />
-            </h3>
-            <h3 className="task-head">
-              {" "}
-              <span className="forms-text" style={{ marginLeft: "1px" }}>
-                Tasks
-              </span>
-            </h3>
+            </h3>*/}
+                <h3 className="task-head">
+                  {" "}
+                  <span className="forms-text" style={{ marginLeft: "1px" }}>
+                    Tasks
+                  </span>
+                </h3>
+              </div>
+            </div>
           </div>
+
+          <ServiceFilter />
+
+          <TaskFilter />
+
+          <TaskTable showApplicationSetter={wrapperSetShowApplication} />
         </div>
-      </div>
-
-      <ServiceFilter />
-
-      <TaskFilter />
-
-      <TaskTable showApplicationSetter={wrapperSetShowApplication} />
-    </div>
-  ) : (
-    <div className="container" id="main">
-      <Button onClick={onClickBackButton}>Back</Button>
-      <Container fluid id="main">
-        <Route path={"/task_new/:taskId?"}>
-          <ServiceFlowTaskDetails />
-        </Route>
-        <Route path={"/task_new/:taskId/:notAvailable"}>
-          {" "}
-          <Redirect exact to="/404" />
-        </Route>
-      </Container>
-    </div>
+      ) : (
+        <div className="container-task-view">
+          <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+            <a
+              className="text-primary"
+              style={{ cursor: "pointer" }}
+              onClick={onClickBackButton}
+            >
+              <span>
+                <span>
+                  <i className="fa fa-angle-left" style={{ color: "black" }} />
+                  &nbsp;
+                </span>
+                Back to search results
+              </span>
+            </a>
+          </div>
+          <Container fluid id="main">
+            <Route path={"/task_new/:taskId?"}>
+              <ServiceFlowTaskDetails />
+            </Route>
+            <Route path={"/task_new/:taskId/:notAvailable"}>
+              {" "}
+              <Redirect exact to="/404" />
+            </Route>
+          </Container>
+        </div>
+      )}
+    </>
   );
 });

@@ -170,6 +170,13 @@ const TaskTable = React.memo(({ showApplicationSetter }) => {
     return <label title={cell}>{localdate}</label>;
   }
 
+  const defaultSortedBy = [
+    {
+      dataField: "id",
+      order: "desc",
+    }
+  ];
+
   const columns = [
     {
       dataField: partyName,
@@ -214,6 +221,8 @@ const TaskTable = React.memo(({ showApplicationSetter }) => {
       text: "Edited by",
     },
     {
+      dataField: "",
+      text: "",
       formatter: ViewEditButton,
     },
   ];
@@ -236,6 +245,7 @@ const TaskTable = React.memo(({ showApplicationSetter }) => {
       )}
       noDataIndication={() => !isLoading && getNoDataIndicationContent()}
       onTableChange={handlePageChange}
+      defaultSorted={ defaultSortedBy }
     />
   );
 });
