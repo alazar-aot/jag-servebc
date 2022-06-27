@@ -1,25 +1,64 @@
-.SearchInput
-{
-    width: 85%;
-    display:inline;
+.SearchInput {
+    width: 72%;
+    display: inline;
+    border:0px;
 }
 
-.SearchInputIcon
-{
-    width:10%;
-    display:inline;
+
+@media screen and (min-width: 1000px) {
+    .SearchInput {
+        width: 85%;
+        display: inline;
+    }
+}
+
+@media screen and (min-width: 1400px) {
+    .SearchInput {
+        width: 90%;
+        display: inline;
+    }
+}
+
+.SearchInputIcon {
+    width: 10%;
+    display: inline;
     color: #6c757d;
 }
 
 
-.SearchControl
-{
-    width:15%;
+.SearchControl {
+    width: 15%;
     display: inline-block;
-    margin:2px;
+    margin: 2px;
+   
 }
 
-.task-filter
+
+.SearchInput:focus
 {
-    margin:2px;
+    border-color: #003366;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px #003366;
+    outline: 0 none;
 }
+
+.fullbox
+{
+    background-color: white;;
+}
+
+.task-filter {
+    margin: 2px;
+    background: #cdd3d8;
+    height: 100px;
+}
+
+
+.clearSearch {
+    background: #003366;
+    color: white;
+    margin: 2px;
+    width: 75px;
+    display: inline-block;
+    height: 30px;
+}
+
