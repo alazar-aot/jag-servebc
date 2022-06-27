@@ -13,6 +13,7 @@ const TextSearch = (props) => {
           ref={props.searchRef}
           type="text"
           className="form-control SearchInput"
+          placeholder={props.placeholdertext}
         ></input>
         <i
           className="fa-solid fa fa-search ml-1 SearchInputIcon"

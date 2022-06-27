@@ -48,7 +48,7 @@
 
 .task-filter {
     margin: 2px;
-    background: #cdd3d8;
+    background: #ebebeb;
     height: 100px;
 }
 
@@ -56,9 +56,19 @@
 .clearSearch {
     background: #003366;
     color: white;
-    margin: 2px;
-    width: 75px;
-    display: inline-block;
-    height: 30px;
+    // margin: 2px;
+    // width: 75px;
+    // display: inline-block;
+    // height: 30px;
 }
+
+.clearSearch:hover {
+   
+    background: #003366;
+    color: white !important;   
+    
+}
+
+
+
 

@@ -6,6 +6,7 @@ import DropdownFilter from "./DropdownFilter/DropdownFilter";
 import DateFilter from "./DateFilter/DateFilter";
 import user from "../../../modules/userDetailReducer";
 import TextSearch from "./TextSearchFilter/TextSearch";
+import { Button } from "react-bootstrap";
 
 const TaskFilter = React.memo(() => {
   const searchRef = useRef();
@@ -140,13 +141,15 @@ const TaskFilter = React.memo(() => {
   ];
 
   return (
-    <div class="task-filter p-2">
+    <div className="task-filter p-2">
       <TextSearch
+        placeholdertext="name"
         searchRef={searchRef}
         handleClick={handlePartyNameSearchClick}
         label="Party Name"
       ></TextSearch>
       <TextSearch
+        placeholdertext="ref #"
         searchRef={fileNumberRef}
         handleClick={handleCourtFileNumberSearchClick}
         label="Court Tribunal File#"
@@ -173,12 +176,15 @@ const TaskFilter = React.memo(() => {
         serveDate={nextAppearanceDateRef}
         handleDateChange={nextAppearanceDateHandler}
       ></DateFilter>
-      <span onClick={handleClearFilter} className="clearSearch m-1">
+      {/* <span >
         <span className="p-1">
-          <span className="px-1">Clear</span>
-          <i className="fa fa-solid fa-filter pr-1"></i>
+       
         </span>
-      </span>
+      </span> */}
+      <Button onClick={handleClearFilter} className="clearSearch m-1">
+        Clear
+        <i className="fa fa-solid fa-filter pr-1"></i>
+      </Button>
     </div>
   );
 });
