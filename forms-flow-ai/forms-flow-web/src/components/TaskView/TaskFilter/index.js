@@ -1,40 +1,74 @@
-import React from "react";
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-import BootstrapTable from 'react-bootstrap-table-next';
+import React, { useEffect, useRef, useState } from "react";
+import { setFilterListSearchParams } from "../../../actions/bpmTaskActions";
+import { useDispatch, useSelector } from "react-redux";
+import classes from "./TaskFilter.scss";
+import TextSearch from "./TextSearchFilter/TextSearch";
+import DropdownFilter from "./DropdownFilter/DropdownFilter";
+import DateFilter from "./DateFilter/DateFilter";
 
 const TaskFilter = React.memo(() => {
+  const searchRef = useRef();
+  const criminalStatusRef = useRef();
+  const serveDate = useRef();
 
-    const test = [ {
-        "id": 1,
-        "searchbar": "test",
-      }];
+  const filterSearchSelections = useSelector(
+    (state) => state.bpmTasks.filterSearchSelections
+  );
 
-    const columns = [{
-        dataField: 'test',
-        text: 'Party'
-    }, {
-        dataField: 'test',
-        text: 'Court Tribunal File #'
-    }, {
-        dataField: 'test',
-        text: 'Status'
-    }, {
-        dataField: 'test',
-        text: 'Criminal?'
-    }, {
-        dataField: 'test',
-        text: 'Responsibility'
-    }, {
-        dataField: 'test',
-        text: 'Date Served'
-    }, {
-        dataField: 'test',
-        text: 'Next Appearance Date'
-    }];
+  console.log(
+    "state.bpmTasks",
+    useSelector((state) => state.bpmTasks)
+  );
 
-    return (
-        <BootstrapTable keyField='id' data={test} columns={columns} />
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log("filterSearchSelections", filterSearchSelections);
+  }, [filterSearchSelections]);
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    dispathFilter("partyName", "=", searchRef.current.value);
+  };
+
+  const handleSelectChagne = (e) => {
+    e.preventDefault();
+    dispathFilter("isCriminal", "=", criminalStatusRef.current.value);
+  };
+
+  const handleDateChange = (e) => {
+    e.preventDefault();
+    dispathFilter("servedDate", ">", serveDate.current.value);
+  };
+
+  const dispathFilter = (param, criteria, searchValue) => {
+    dispatch(
+      setFilterListSearchParams([
+        {
+          key: "processVariables",
+          label: "Process Variables",
+          name: param,
+          operator: criteria,
+          type: "variables",
+          value: searchValue,
+        },
+      ])
     );
+  };
+
+  return (
+    <div class="task-filter">
+      <TextSearch searchRef={searchRef} handleClick={handleClick}></TextSearch>
+      <DropdownFilter
+        criminalStatusRef={criminalStatusRef}
+        handleSelectChagne={handleSelectChagne}
+      ></DropdownFilter>
+      <DateFilter
+        serveDate={serveDate}
+        handleDateChange={handleDateChange}
+      ></DateFilter>
+    </div>
+  );
 });
 
 export default TaskFilter;

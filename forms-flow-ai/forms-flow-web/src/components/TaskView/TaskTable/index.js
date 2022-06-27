@@ -23,7 +23,7 @@ import { MAX_RESULTS } from "../../ServiceFlow/constants/taskConstants";
 
 import { push } from "connected-react-router";
 
-const TaskTable = React.memo(({showApplicationSetter}) => {
+const TaskTable = React.memo(({ showApplicationSetter }) => {
   const dispatch = useDispatch();
   const taskList = useSelector((state) => state.bpmTasks.tasksList);
   //const tasksCount = useSelector((state) => state.bpmTasks.tasksCount);
@@ -48,7 +48,8 @@ const TaskTable = React.memo(({showApplicationSetter}) => {
 
   // Only render tasks that are related to the Serve Legal Documents Form
   const [taskServeLegalDocs, setTaskServeLegalDocs] = React.useState([]);
-  const [taskServeLegalDocsCount, setTaskServeLegalDocsCount] = React.useState(0);
+  const [taskServeLegalDocsCount, setTaskServeLegalDocsCount] =
+    React.useState(0);
   useEffect(() => {
     // filter task list for Serve Legal Document related tasks
     let filteredTasks = taskList.filter((t) => {
@@ -163,7 +164,9 @@ const TaskTable = React.memo(({showApplicationSetter}) => {
 
   function timeFormatter(cell) {
     cell = new Date(cell);
-    const localdate = getLocalDateTime(cell.toISOString().replace("T", " ").replace("Z", ""));
+    const localdate = getLocalDateTime(
+      cell.toISOString().replace("T", " ").replace("Z", "")
+    );
     return <label title={cell}>{localdate}</label>;
   }
 
@@ -234,7 +237,7 @@ const TaskTable = React.memo(({showApplicationSetter}) => {
       noDataIndication={() => !isLoading && getNoDataIndicationContent()}
       onTableChange={handlePageChange}
     />
-  )
+  );
 });
 
 export default TaskTable;

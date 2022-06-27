@@ -2,7 +2,13 @@ import React, { useCallback, useEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { ALL_TASKS } from "../ServiceFlow/constants/taskConstants";
-import { setSelectedBPMFilter } from "../../actions/bpmTaskActions";
+import {
+  setSelectedBPMFilter,
+  setBPMTaskLoader,
+  setBPMTaskListActivePage,
+  setFilterListParams,
+} from "../../actions/bpmTaskActions";
+import { fetchServiceTaskList } from "../../apiManager/services/bpmTaskServices";
 
 import ServiceFilter from "./ServiceFilter";
 import TaskFilter from "./TaskFilter";
@@ -15,14 +21,50 @@ import { Route, Redirect } from "react-router-dom";
 import { push } from "connected-react-router";
 import { Button } from "react-bootstrap";
 
-export default React.memo(() => {
+import isEqual from "lodash/isEqual";
+import cloneDeep from "lodash/cloneDeep";
 
+export default React.memo(() => {
   const dispatch = useDispatch();
 
+  const sortParams = useSelector(
+    (state) => state.bpmTasks.filterListSortParams
+  );
+  const searchParams = useSelector(
+    (state) => state.bpmTasks.filterListSearchParams
+  );
+  const listReqParams = useSelector((state) => state.bpmTasks.listReqParams);
+  const selectedFilter = useSelector((state) => state.bpmTasks.selectedFilter);
+  const reqData = useSelector((state) => state.bpmTasks.reqData);
+
+  useEffect(() => {
+    console.log("filter params changed");
+    const reqParamData = {
+      ...{ sorting: [...sortParams.sorting] },
+      ...searchParams,
+    };
+    if (!isEqual(reqParamData, listReqParams)) {
+      dispatch(setFilterListParams(cloneDeep(reqParamData)));
+    }
+  }, [searchParams, sortParams, dispatch, listReqParams]);
+
+  useEffect(() => {
+    console.log("selectedFilter on table index.js", selectedFilter, reqData);
+
+    if (selectedFilter) {
+      dispatch(setBPMTaskLoader(true));
+      dispatch(setBPMTaskListActivePage(1));
+      dispatch(fetchServiceTaskList(selectedFilter.id, 0, reqData));
+    }
+  }, [dispatch, selectedFilter, reqData]);
+
   const [showApplication, setShowApplication] = React.useState(false);
-  const wrapperSetShowApplication = useCallback(val => {
-    setShowApplication(val);
-  }, [setShowApplication]);
+  const wrapperSetShowApplication = useCallback(
+    (val) => {
+      setShowApplication(val);
+    },
+    [setShowApplication]
+  );
 
   /*
   // TODO: How to set showapplications to false when clicking the "Tasks" tab
@@ -40,7 +82,6 @@ export default React.memo(() => {
   const isFilterLoading = useSelector(
     (state) => state.bpmTasks.isFilterLoading
   );
-  const selectedFilter = useSelector((state) => state.bpmTasks.selectedFilter);
 
   useEffect(() => {
     if (!isFilterLoading && filterList.length && !selectedFilter) {
@@ -76,25 +117,24 @@ export default React.memo(() => {
         </div>
       </div>
 
-      {/*<ServiceFilter />*/}
+      <ServiceFilter />
 
-      {/*<TaskFilter />*/}
+      <TaskFilter />
 
-      <TaskTable showApplicationSetter={wrapperSetShowApplication}/>
-
+      <TaskTable showApplicationSetter={wrapperSetShowApplication} />
     </div>
-  ): (
+  ) : (
     <div className="container" id="main">
-    <Button onClick={onClickBackButton}>Back</Button>
-    <Container fluid id="main">
-      <Route path={"/task_new/:taskId?"}>
-        <ServiceFlowTaskDetails />
-      </Route>
-      <Route path={"/task_new/:taskId/:notAvailable"}>
-        {" "}
-        <Redirect exact to="/404" />
-      </Route>
-    </Container>
+      <Button onClick={onClickBackButton}>Back</Button>
+      <Container fluid id="main">
+        <Route path={"/task_new/:taskId?"}>
+          <ServiceFlowTaskDetails />
+        </Route>
+        <Route path={"/task_new/:taskId/:notAvailable"}>
+          {" "}
+          <Redirect exact to="/404" />
+        </Route>
+      </Container>
     </div>
   );
 });
