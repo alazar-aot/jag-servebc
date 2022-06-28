@@ -30,6 +30,22 @@ const ServiceFilter = React.memo(() => {
   // Get list of filters
   const filterList = useSelector((state) => state.bpmTasks.filterList);
 
+  let filteredTasks = filterList.filter((t) => {
+    // filter task variables
+    let taskVariableList = t.properties.variables.filter((v) => {
+      return (
+        v.name === "documentStatus" ||
+        v.name === "partyName" ||
+        v.name === "isCriminal" ||
+        v.name === "nextAppearanceDate" ||
+        v.name === "staffGroup" ||
+        v.name === "courtOrTribunalFileNbr" ||
+        v.name === "servedDate"
+      );
+    });
+    return taskVariableList.length > 0;
+  });
+
   // const temporaryFilterList = [
   //   {
   //     id: "ef4128a8d9a8d-af4ad4-dkf923j",
@@ -58,22 +74,21 @@ const ServiceFilter = React.memo(() => {
   //   },
   // ];
 
-
   // Define function to handle tab selection
-  
+
   // x contains the name of the tab/filter (eg. "Joint tasks")
   const handleTabSelect = (selectedTabName) => {
-
     // Get the correct filter object matching the selected tab name
-    var newFilter = filterList.filter((x) => x.name == selectedTabName);  
+    var newFilter = filteredTasks.filter((x) => x.name == selectedTabName);
 
     // Update Selected Tab
-    setCurrentTab(newFilter.name);
+    setCurrentTab(newFilter[0].name);
 
     // Update State Selected Filter
-    dispatch(setSelectedBPMFilter(newFilter));
+    dispatch(setSelectedBPMFilter(newFilter[0]));
   };
 
+  console.log("filterList", filterList);
 
   return (
     <>
@@ -85,23 +100,8 @@ const ServiceFilter = React.memo(() => {
           handleTabSelect(selectedTab);
         }}
       >
-        {filterList.map((x) => {
-          // check to see if the currently mapped filter is a filter we want to display at this level
-          if(x.name === "All tasks" ||
-            x.name === "Joint tasks" ||
-            x.name === "BCPS tasks" ||
-            x.name === "LSB tasks"
-        ){
-          // return the filters we want to display
-          return ( 
-            <Tab key={x.id} eventKey={x.name} title={x.name}></Tab>
-          );
-        } else {
-          // return nothing, we don't need those filters at the top level
-          return (
-            <></>
-          );
-        }
+        {filteredTasks.map((x) => {
+          return <Tab key={x.id} eventKey={x.name} title={x.name}></Tab>;
         })}
       </Tabs>
     </>

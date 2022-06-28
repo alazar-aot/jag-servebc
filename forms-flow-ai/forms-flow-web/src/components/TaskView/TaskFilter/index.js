@@ -15,11 +15,17 @@ const TaskFilter = React.memo(() => {
   const serveDateRef = useRef();
   const fileNumberRef = useRef();
   const nextAppearanceDateRef = useRef();
+  const editedByRef = useRef();
+
+  const [partyName, setPartyName] = useState();
 
   const filterSearchSelections = useSelector(
     (state) => state.bpmTasks.filterSearchSelections
   );
 
+  const setValueInControls = () => {};
+
+  setValueInControls();
   console.log(
     "state.bpmTasks",
     useSelector((state) => state.bpmTasks)
@@ -29,6 +35,8 @@ const TaskFilter = React.memo(() => {
 
   useEffect(() => {
     console.log("filterSearchSelections", filterSearchSelections);
+
+    setValueInControls();
   }, [filterSearchSelections]);
 
   const handlePartyNameSearchClick = (e) => {
@@ -39,6 +47,11 @@ const TaskFilter = React.memo(() => {
   const handleCourtFileNumberSearchClick = (e) => {
     e.preventDefault();
     dispathFilter("courtOrTribunalFileNbr", "=", searchRef.current.value);
+  };
+
+  const handleEditedBySearchClick = (e) => {
+    e.preventDefault();
+    dispathFilter("assignee", "like", editedByRef.current.value);
   };
 
   const handleSelectChagne = (e) => {
@@ -71,20 +84,36 @@ const TaskFilter = React.memo(() => {
     if (searchValue == "" || searchValue == null) {
       dispatch(setFilterListSearchParams([...searchParms]));
     } else {
-      dispatch(
-        setFilterListSearchParams([
-          ...searchParms,
+      if (param == "assignee") {
+        dispatch(
+          setFilterListSearchParams([
+            ...searchParms,
 
-          {
-            key: "processVariables",
-            label: "Process Variables",
-            name: param,
-            operator: criteria,
-            type: "variables",
-            value: searchValue,
-          },
-        ])
-      );
+            {
+              key: "assignee",
+              label: "Assignee",
+              operator: criteria,
+              type: "string",
+              value: searchValue,
+            },
+          ])
+        );
+      } else {
+        dispatch(
+          setFilterListSearchParams([
+            ...searchParms,
+
+            {
+              key: "processVariables",
+              label: "Process Variables",
+              name: param,
+              operator: criteria,
+              type: "variables",
+              value: searchValue,
+            },
+          ])
+        );
+      }
     }
   };
 
@@ -95,6 +124,7 @@ const TaskFilter = React.memo(() => {
     criminalStatusRef.current.value = "";
     serveDateRef.current.value = null;
     nextAppearanceDateRef.current.value = null;
+    editedByRef.current.value = null;
     console.log();
     dispatch(setFilterListSearchParams([]));
   };
@@ -143,16 +173,22 @@ const TaskFilter = React.memo(() => {
   return (
     <div className="task-filter p-2">
       <TextSearch
-        placeholdertext="name"
+        placeholdertext="Name"
         searchRef={searchRef}
         handleClick={handlePartyNameSearchClick}
         label="Party Name"
       ></TextSearch>
       <TextSearch
-        placeholdertext="ref #"
+        placeholdertext="File #"
         searchRef={fileNumberRef}
         handleClick={handleCourtFileNumberSearchClick}
-        label="Court Tribunal File#"
+        label="Court/Tribunal File #"
+      ></TextSearch>
+      <TextSearch
+        placeholdertext="Edited by"
+        searchRef={editedByRef}
+        handleClick={handleEditedBySearchClick}
+        label="Edited by"
       ></TextSearch>
       <DropdownFilter
         label="Status"
@@ -161,7 +197,7 @@ const TaskFilter = React.memo(() => {
         options={documentStatusOptions}
       ></DropdownFilter>
       <DropdownFilter
-        label="Criminal Status"
+        label="Criminal Matter"
         criminalStatusRef={criminalStatusRef}
         handleSelectChagne={handleSelectChagne}
         options={crimalStatusOptions}
