@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "../TaskView.scss";
+import "./TaskTable.scss";
 import {
   fetchFilterList,
   fetchProcessDefinitionList,
@@ -22,21 +22,22 @@ import { MAX_RESULTS } from "../../ServiceFlow/constants/taskConstants";
 
 import { push } from "connected-react-router";
 
-const TaskTable = React.memo(({ showApplicationSetter }) => {
+const TaskTable = React.memo(({ showApplicationSetter: showTaskDetailsSetter }) => {
   const dispatch = useDispatch();
   const taskList = useSelector((state) => state.bpmTasks.tasksList);
-  //const tasksCount = useSelector((state) => state.bpmTasks.tasksCount);
   const countPerPage = MAX_RESULTS;
   const page = useSelector((state) => state.bpmTasks.activePage);
   const selectedFilter = useSelector((state) => state.bpmTasks.selectedFilter);
   const reqData = useSelector((state) => state.bpmTasks.listReqParams);
-  const [showApplication, setShowApplication] = React.useState(false);
-
+  
+  // Toggle the showApplication variable on the View/Edit button click
+  const [showTaskDetails, setShowTaskDetails] = React.useState(false);
   useEffect(() => {
-    showApplicationSetter(showApplication);
-  }, [showApplicationSetter, showApplication]);
+    showTaskDetailsSetter(showTaskDetails);
+  }, [showTaskDetailsSetter, showTaskDetails]);
 
-  // TODO: Make this an enum? or some sort of data structure?
+  // These task variables are from Camunda and are specific to JAG Serve Legal Documents
+  // See http://localhost:8000/camunda/app
   const documentStatus = "_embedded.variable[0].value";
   const partyName = "_embedded.variable[1].value";
   const isCriminal = "_embedded.variable[2].value";
@@ -46,13 +47,13 @@ const TaskTable = React.memo(({ showApplicationSetter }) => {
   const servedDate = "_embedded.variable[6].value";
 
   // Only render tasks that are related to the Serve Legal Documents Form
+  // Otherwise, the application crashes if a different form has been submitted
   const [taskServeLegalDocs, setTaskServeLegalDocs] = React.useState([]);
-  const [taskServeLegalDocsCount, setTaskServeLegalDocsCount] =
-    React.useState(0);
+  const [taskServeLegalDocsCount, setTaskServeLegalDocsCount] = React.useState(0);
   useEffect(() => {
     // filter task list for Serve Legal Document related tasks
     let filteredTasks = taskList.filter((t) => {
-      // filter task variables
+      // filter through all task variables
       let taskVariableList = t._embedded.variable.filter((v) => {
         return (
           v.name === "documentStatus" ||
@@ -89,7 +90,7 @@ const TaskTable = React.memo(({ showApplicationSetter }) => {
     );
   };
 
-  // Pagination
+  // Used for Pagination
   const useNoRenderRef = (currentValue) => {
     const ref = useRef(currentValue);
     ref.current = currentValue;
@@ -97,18 +98,8 @@ const TaskTable = React.memo(({ showApplicationSetter }) => {
   };
   const countPerPageRef = useNoRenderRef(countPerPage);
   const currentPage = useNoRenderRef(page);
-
   useEffect(() => {
-    dispatch(setBPMFilterLoader(true));
-    dispatch(fetchFilterList());
-    dispatch(fetchProcessDefinitionList());
-    // dispatch(fetchUserList());
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(
-      fetchServiceTaskList(currentPage.current, countPerPageRef.current)
-    );
+    dispatch(fetchServiceTaskList(currentPage.current, countPerPageRef.current));
   }, [dispatch, currentPage, countPerPageRef]);
 
   const handlePageChange = (type, newState) => {
@@ -121,10 +112,14 @@ const TaskTable = React.memo(({ showApplicationSetter }) => {
         setIsLoading(true);
       }
     }
-    //dispatch(setCountPerpage(newState.sizePerPage));
-    //dispatch(FilterApplications(newState));
     dispatch(setBPMTaskListActivePage(newState.page));
   };
+
+  useEffect(() => {
+    dispatch(setBPMFilterLoader(true));
+    dispatch(fetchFilterList());
+    dispatch(fetchProcessDefinitionList());
+  }, [dispatch]);
 
   useEffect(() => {
     if (selectedFilter) {
@@ -147,7 +142,7 @@ const TaskTable = React.memo(({ showApplicationSetter }) => {
     );
   };
 
-  // Show application
+  // Show Task details in a new view
   const bpmTaskId = useSelector((state) => state.bpmTasks.taskId);
   const getTaskDetails = (taskId) => {
     if (taskId !== bpmTaskId) {
@@ -156,10 +151,9 @@ const TaskTable = React.memo(({ showApplicationSetter }) => {
   };
 
   const onViewEditChanged = (row) => {
-    console.log("ViewEditButton clicked!");
-    console.log(row.id);
+    //console.log("ViewEditButton clicked!");
     getTaskDetails(row.id);
-    setShowApplication(true);
+    setShowTaskDetails(true);
   };
 
   function timeFormatter(cell) {
@@ -167,7 +161,7 @@ const TaskTable = React.memo(({ showApplicationSetter }) => {
     const date = new Date(cell);
     const year = date.getFullYear();
     const month = date.toLocaleString('en-US', {month: 'short'});
-    const day = date.getDate();
+    const day = ('0' + date.getDate()).slice(-2);
     const localdate = year + "/" + month.toUpperCase() + "/" + day;
 
     return <label title={cell}>{localdate}</label>;
@@ -229,6 +223,7 @@ const TaskTable = React.memo(({ showApplicationSetter }) => {
       formatter: ViewEditButton,
     },
   ];
+
 
   if (isLoading) {
     return <Loading />;

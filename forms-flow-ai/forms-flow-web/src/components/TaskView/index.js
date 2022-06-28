@@ -14,7 +14,6 @@ import ServiceFilter from "./ServiceFilter";
 import TaskFilter from "./TaskFilter";
 import TaskTable from "./TaskTable";
 
-// To show application
 import ServiceFlowTaskDetails from "../ServiceFlow/details/ServiceTaskDetails";
 import { Container } from "react-bootstrap";
 import { Route, Redirect } from "react-router-dom";
@@ -57,13 +56,10 @@ export default React.memo(() => {
     }
   }, [dispatch, selectedFilter, reqData]);
 
-  const [showApplication, setShowApplication] = React.useState(false);
-  const wrapperSetShowApplication = useCallback(
-    (val) => {
-      setShowApplication(val);
-    },
-    [setShowApplication]
-  );
+  const [showTaskDetails, setShowTaskDetails] = React.useState(false);
+  const wrapperSetShowTaskDetails = useCallback((val) => {
+      setShowTaskDetails(val);
+  },[setShowTaskDetails]);
 
   /*
   // TODO: How to set showapplications to false when clicking the "Tasks" tab
@@ -74,7 +70,7 @@ export default React.memo(() => {
 
   const onClickBackButton = () => {
     dispatch(push(`/task_new`));
-    setShowApplication(false);
+    setShowTaskDetails(false);
   };
 
   const filterList = useSelector((state) => state.bpmTasks.filterList);
@@ -99,15 +95,12 @@ export default React.memo(() => {
 
   return (
     <>
-      {!showApplication ? (
+      {!showTaskDetails ? (
         <div className="container-task-view">
-          {/* Task Title */}
+
           <div className="flex-container">
             <div className="flex-item-left">
               <div style={{ display: "flex" }}>
-                {/*<h3 className="task-head" style={{ marginTop: "3px" }}>
-              <i className="fa fa-cogs" aria-hidden="true" />
-            </h3>*/}
                 <h3 className="task-head">
                   {" "}
                   <span className="forms-text" style={{ marginLeft: "1px" }}>
@@ -122,7 +115,7 @@ export default React.memo(() => {
 
           <TaskFilter />
 
-          <TaskTable showApplicationSetter={wrapperSetShowApplication} />
+          <TaskTable showApplicationSetter={wrapperSetShowTaskDetails} />
         </div>
       ) : (
         <div className="container-task-view">

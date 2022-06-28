@@ -1,39 +1,9 @@
-table thead .caret {
-  display: inline-block;
-  width: 0;
-  height: 0;
-  margin-left: 2px;
-  vertical-align: middle;
-  border-top: 4px dashed;
-  border-top: 4px solid \9;
-  border-right: 4px solid transparent;
-  border-left: 4px solid transparent;
+.button-view-edit {
+  background: #003366;
+  color: white;
 }
 
-/*
-table thead tr { 
-    border-bottom: 3px solid #0a0a0a; 
-}
-*/
-
-.div-no-tasks {
-  margin-top: 10%;
-  margin-bottom: 10%;
-}
-.lbl-no-tasks {
-  font-size: 21px;
-  font-weight: bold;
-}
-.lbl-no-tasks-desc {
-  font-size: 15px;
-}
-
-.react-bootstrap-table {
-  min-height: 500px;
-  overflow: auto;
-}
-
-.icon-search {
-  font-family: "BC Sans", "Noto Sans", Arial, "sans serif";
-  font-size: 14px;
+.button-view-edit:hover {
+  background: #003366;
+  color: white;
 }
