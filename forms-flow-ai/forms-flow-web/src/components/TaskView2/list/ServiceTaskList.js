@@ -155,7 +155,7 @@ const ServiceFlowTaskList = React.memo(() => {
 
   function timeFormatter(cell) {
     
-    if (cell == null || cell == " " || cell == undefined) {
+    if (cell == null || cell == "" || cell == undefined) {
       console.log(cell);
       return " ";
     }
@@ -236,7 +236,7 @@ const ServiceFlowTaskList = React.memo(() => {
                     </td>
                     <td>
                       {/* View / Edit */}
-                      <button type="button" class="button-view-edit btn btn-primary">View/Edit</button>
+                      <button type="button" className="button-view-edit btn btn-primary">View/Edit</button>
                     </td>
                 
               </tr>
