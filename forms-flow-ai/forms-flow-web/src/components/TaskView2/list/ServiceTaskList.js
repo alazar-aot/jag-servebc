@@ -145,9 +145,26 @@ const ServiceFlowTaskList = React.memo(() => {
     }
   };
 
+  function timeFormatter(cell) {
+    
+    if (cell == null || cell == " " || cell == undefined) {
+      console.log(cell);
+      return " ";
+    }
+    const date = new Date(cell);
+    const year = date.getFullYear();
+    const month = date.toLocaleString("en-US", { month: "short" });
+    const day = ("0" + date.getDate()).slice(-2);
+    const localdate = year + "/" + month.toUpperCase() + "/" + day;
+
+    return <label title={cell}>{localdate}</label>;
+  }
+
   const renderTaskTable = () => {
 
     if ((tasksCount||taskList.length) && selectedFilter) {
+
+      console.log(taskList);
 
       return (
         <>
@@ -159,40 +176,60 @@ const ServiceFlowTaskList = React.memo(() => {
                 <th>Responsibility</th>
                 <th>Criminal</th>
                 <th>Court/Tribunal File #</th>
+                <th>Registry</th>
                 <th>Date Served</th>
                 <th>Next Appearance Date</th>
+                <th>Edited by</th>
+                <th>View/Edit</th>
                 
               </tr>
             </thead>
 
             <tbody>
             {taskServeLegalDocs.map((task, index) => (
-              <tr>
+
+              <tr key={task.id}>
                 
-                  <>
                     <td>
+                      {/* Party */}
                       {task._embedded.variable[1].value}
                     </td>
                     <td>
+                      {/* Status */}
                       {task._embedded.variable[0].value}
                     </td>
                     <td>
+                      {/* Responsibility */}
                       {task._embedded.variable[4].value}
                     </td>
                     <td>
+                      {/* Criminal */}
                       {task._embedded.variable[2].value}
                     </td>
                     <td>
+                      {/* Court/Tribunal File # */}
                       {task._embedded.variable[5].value}
                     </td>
                     <td>
-                      {task._embedded.variable[6].value}
+                      {/* Registry */}
+                      
                     </td>
                     <td>
-                      {task._embedded.variable[3].value}
+                      {/* Date Served */}
+                      {timeFormatter(task._embedded.variable[6].value)}
                     </td>
-                    
-                  </>
+                    <td>
+                      {/* Next Appearance Date */}
+                      {timeFormatter(task._embedded.variable[3].value)}
+                    </td>
+                    <td>
+                      {/* Edited by */}
+                      {task.assignee}
+                    </td>
+                    <td>
+                      {/* View / Edit */}
+                
+                    </td>
                 
               </tr>
               ))}
