@@ -13,7 +13,15 @@ import { getProcessDataFromList,getFormattedDateAndTime } from "../../../apiMana
 import TaskFilterComponent from "./search/TaskFilterComponent";
 import Pagination from "react-js-pagination";
 import {push} from "connected-react-router";
-import {MAX_RESULTS} from "../constants/taskConstants";
+import {
+  MAX_RESULTS, 
+  DOCUMENT_STATUS, 
+  PARTY_NAME, 
+  IS_CRIMINAL, 
+  NEXT_APPEARANCE_DATE, 
+  RESPONSIBILITY, 
+  COURT_OR_TRIBUNAL_FILE_NUMBER, 
+  DATE_SERVED} from "../constants/taskConstants";
 import {getFirstResultIndex} from "../../../apiManager/services/taskSearchParamsFormatterService";
 import TaskVariable from "./TaskVariable";
 const ServiceFlowTaskList = React.memo(() => {
@@ -119,7 +127,7 @@ const ServiceFlowTaskList = React.memo(() => {
               {
                 task._embedded?.variable &&  <TaskVariable variables={task._embedded?.variable||[]}/>
               }
-                       
+                      
             </div>
           ))}
           <div className="pagination-wrapper">
@@ -151,6 +159,7 @@ const ServiceFlowTaskList = React.memo(() => {
       console.log(cell);
       return " ";
     }
+    
     const date = new Date(cell);
     const year = date.getFullYear();
     const month = date.toLocaleString("en-US", { month: "short" });
@@ -180,8 +189,7 @@ const ServiceFlowTaskList = React.memo(() => {
                 <th>Date Served</th>
                 <th>Next Appearance Date</th>
                 <th>Edited by</th>
-                <th>View/Edit</th>
-                
+                <th>View/Edit Form</th>
               </tr>
             </thead>
 
@@ -192,23 +200,23 @@ const ServiceFlowTaskList = React.memo(() => {
                 
                     <td>
                       {/* Party */}
-                      {task._embedded.variable[1].value}
+                      {task._embedded.variable[PARTY_NAME].value}
                     </td>
                     <td>
                       {/* Status */}
-                      {task._embedded.variable[0].value}
+                      {task._embedded.variable[DOCUMENT_STATUS].value}
                     </td>
                     <td>
                       {/* Responsibility */}
-                      {task._embedded.variable[4].value}
+                      {task._embedded.variable[RESPONSIBILITY].value}
                     </td>
                     <td>
                       {/* Criminal */}
-                      {task._embedded.variable[2].value}
+                      {task._embedded.variable[IS_CRIMINAL].value}
                     </td>
                     <td>
                       {/* Court/Tribunal File # */}
-                      {task._embedded.variable[5].value}
+                      {task._embedded.variable[COURT_OR_TRIBUNAL_FILE_NUMBER].value}
                     </td>
                     <td>
                       {/* Registry */}
@@ -216,11 +224,11 @@ const ServiceFlowTaskList = React.memo(() => {
                     </td>
                     <td>
                       {/* Date Served */}
-                      {timeFormatter(task._embedded.variable[6].value)}
+                      {timeFormatter(task._embedded.variable[DATE_SERVED].value)}
                     </td>
                     <td>
                       {/* Next Appearance Date */}
-                      {timeFormatter(task._embedded.variable[3].value)}
+                      {timeFormatter(task._embedded.variable[NEXT_APPEARANCE_DATE].value)}
                     </td>
                     <td>
                       {/* Edited by */}
@@ -228,7 +236,7 @@ const ServiceFlowTaskList = React.memo(() => {
                     </td>
                     <td>
                       {/* View / Edit */}
-                
+                      <button type="button" class="button-view-edit btn btn-primary">View/Edit</button>
                     </td>
                 
               </tr>

@@ -444,3 +444,21 @@ span[dat-title]:hover:after,.ml-1[dat-title]:hover:after,.tooltips[dat-title]:ho
 #priority-level {
   font-size: 0.7rem;
 }
+
+// Task View Styling
+table tr:nth-child(odd) td{
+  background-color: grey;
+}
+table tr:nth-child(even) td{
+  background-color: lightgray;
+}
+
+.button-view-edit {
+  background: #003366;
+  color: white;
+}
+
+.button-view-edit:hover {
+  background: #003366;
+  color: white;
+}

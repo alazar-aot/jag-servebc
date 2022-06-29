@@ -68,18 +68,19 @@ const NavBar = React.memo(() => {
               <Nav.Link as={Link} to='/form'  className={`main-nav nav-item ${
                 pathname.match(/^\/form/) ? "active-tab" : ""
               }`}> Forms</Nav.Link>
+              
               {(getUserRolePermission(userRoles, STAFF_DESIGNER)) ?
                 (<Nav.Link as={Link} to='/admin'  className={`main-nav nav-item ${
                   pathname.match(/^\/admin/) ? "active-tab" : ""
                 }`}> Admin</Nav.Link>)
                 :null}
 
-              {showApplications?(getUserRolePermission(userRoles, STAFF_REVIEWER) ||  getUserRolePermission(userRoles, CLIENT)) ?
+              {/* {showApplications?(getUserRolePermission(userRoles, STAFF_REVIEWER) ||  getUserRolePermission(userRoles, CLIENT)) ?
                 (<Nav.Link as={Link} to='/application'  className={`main-nav nav-item ${
                   pathname.match(/^\/application/) ? "active-tab" : ""
                 }`}> Applications</Nav.Link>)
                 :null:
-                null}
+                null} */}
 
 {/*              {getUserRolePermission(userRoles, STAFF_REVIEWER) ?
                 <Nav.Link as={Link} to='/task'  className={`main-nav nav-item ${
@@ -99,11 +100,17 @@ const NavBar = React.memo(() => {
                   pathname.match(/^\/task_new/) ? "active-tab" : ""
                 }`}> Tasks</Nav.Link>:null}
 
-              {getUserRolePermission(userRoles, STAFF_REVIEWER) ?<NavDropdown title={<>Dashboards</>}
-                                                                              id="dashboard-dropdown"
-                                                                              className={`main-nav nav-item ${
-                                                                                pathname.match(/^\/metrics/) || pathname.match(/^\/insights/) ? "active-tab-dropdown" : ""
-                                                                              }`}>
+              {getUserRolePermission(userRoles, STAFF_REVIEWER) ?
+                <Nav.Link as={Link} to='/task_new2'  className={`main-nav nav-item ${
+                  pathname.match(/^\/task_new2/) ? "active-tab" : ""
+                }`}> Home</Nav.Link>:null}
+
+              {getUserRolePermission(userRoles, STAFF_REVIEWER) ?
+                <NavDropdown title={<>Dashboards</>}
+                id="dashboard-dropdown"
+                className={`main-nav nav-item ${
+                  pathname.match(/^\/metrics/) || pathname.match(/^\/insights/) ? "active-tab-dropdown" : ""
+                }`}>
                 <NavDropdown.Item as={Link} to='/metrics' className={`main-nav nav-item ${
                   pathname.match(/^\/metrics/) ? "active-tab" : ""
                 }`}><i className="fa fa-pie-chart fa-fw fa-lg"  /> Metrics</NavDropdown.Item>
@@ -111,6 +118,7 @@ const NavBar = React.memo(() => {
                   pathname.match(/^\/insights/) ? "active-tab" : ""
                 }`}><i className="fa fa-lightbulb-o fa-fw fa-lg"/> Insights</NavDropdown.Item>}
               </NavDropdown>:null}
+
             </Nav>
             <Nav className="ml-auto">
                   <Dropdown alignRight>
