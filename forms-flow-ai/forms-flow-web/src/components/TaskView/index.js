@@ -22,15 +22,12 @@ import { push } from "connected-react-router";
 import isEqual from "lodash/isEqual";
 import cloneDeep from "lodash/cloneDeep";
 
+import TaskSortSelectedList from "./TaskSort/TaskSortSelectedList";
+
 export default React.memo(() => {
   const dispatch = useDispatch();
-
-  const sortParams = useSelector(
-    (state) => state.bpmTasks.filterListSortParams
-  );
-  const searchParams = useSelector(
-    (state) => state.bpmTasks.filterListSearchParams
-  );
+  const sortParams = useSelector((state) => state.bpmTasks.filterListSortParams);
+  const searchParams = useSelector((state) => state.bpmTasks.filterListSearchParams);
   const listReqParams = useSelector((state) => state.bpmTasks.listReqParams);
   const selectedFilter = useSelector((state) => state.bpmTasks.selectedFilter);
   const reqData = useSelector((state) => state.bpmTasks.reqData);
@@ -55,6 +52,7 @@ export default React.memo(() => {
       dispatch(fetchServiceTaskList(selectedFilter.id, 0, reqData));
     }
   }, [dispatch, selectedFilter, reqData]);
+
 
   const [showTaskDetails, setShowTaskDetails] = React.useState(false);
   const wrapperSetShowTaskDetails = useCallback((val) => {
