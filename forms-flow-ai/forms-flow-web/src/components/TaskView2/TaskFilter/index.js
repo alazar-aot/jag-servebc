@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { setFilterListSearchParams } from "../../../actions/bpmTaskActions";
+import {
+  setFilterListSearchParams,
+  setIsVariableValueIgnoreCase,
+} from "../../../actions/bpmTaskActions";
 import { useDispatch, useSelector } from "react-redux";
 import classes from "./TaskFilter.scss";
 import DropdownFilter from "./DropdownFilter/DropdownFilter";
@@ -16,14 +19,19 @@ const TaskFilter = React.memo(() => {
   const fileNumberRef = useRef();
   const nextAppearanceDateRef = useRef();
   const editedByRef = useRef();
+  const staffGroupRef = useRef();
 
-  const [partyName, setPartyName] = useState();
+  const [showTaskFilters, setShowTaskFilters] = useState(false);
 
   const filterSearchSelections = useSelector(
     (state) => state.bpmTasks.filterSearchSelections
   );
 
   const setValueInControls = () => {};
+
+  useEffect(() => {
+    dispatch(setIsVariableValueIgnoreCase(true));
+  }, []);
 
   setValueInControls();
   console.log(
@@ -39,14 +47,18 @@ const TaskFilter = React.memo(() => {
     setValueInControls();
   }, [filterSearchSelections]);
 
+  const handleShowFilters = () => {
+    setShowTaskFilters(!showTaskFilters);
+  };
+
   const handlePartyNameSearchClick = (e) => {
     e.preventDefault();
-    dispathFilter("partyName", "=", searchRef.current.value);
+    dispathFilter("partyName", "like", searchRef.current.value);
   };
 
   const handleCourtFileNumberSearchClick = (e) => {
     e.preventDefault();
-    dispathFilter("courtOrTribunalFileNbr", "=", searchRef.current.value);
+    dispathFilter("courtOrTribunalFileNbr", "like", searchRef.current.value);
   };
 
   const handleEditedBySearchClick = (e) => {
@@ -62,6 +74,11 @@ const TaskFilter = React.memo(() => {
   const handleDocumentStatusSelectChagne = (e) => {
     e.preventDefault();
     dispathFilter("documentStatus", "=", documentStatusRef.current.value);
+  };
+
+  const handleStaffGroupClick = (e) => {
+    e.preventDefault();
+    dispathFilter("staffgroup", "like", staffGroupRef.current.value);
   };
 
   const handleDateChange = (e) => {
@@ -98,6 +115,33 @@ const TaskFilter = React.memo(() => {
             },
           ])
         );
+      } else if (param == "staffgroup") {
+        dispatch(
+          setFilterListSearchParams([
+            {
+              key: "name",
+              label: "Staff Group",
+              operator: "like",
+              type: "string",
+              value: searchValue,
+            },
+          ])
+        );
+      } else if (param == "servedDate") {
+        dispatch(
+          setFilterListSearchParams([
+            ...searchParms,
+
+            {
+              key: "servedDate",
+              label: "Served Date",
+              name: param,
+              operator: "before",
+              type: "date",
+              value: searchValue,
+            },
+          ])
+        );
       } else {
         dispatch(
           setFilterListSearchParams([
@@ -105,7 +149,7 @@ const TaskFilter = React.memo(() => {
 
             {
               key: "processVariables",
-              label: "Process Variables",
+              label: param,
               name: param,
               operator: criteria,
               type: "variables",
@@ -117,6 +161,16 @@ const TaskFilter = React.memo(() => {
     }
   };
 
+  const handleDeleteFilter = (index) => {
+    var filteredArr = [...filterSearchSelections];
+
+    filteredArr.splice(index, 1);
+
+    console.log(filteredArr);
+
+    dispatch(setFilterListSearchParams(filteredArr));
+  };
+
   const handleClearFilter = () => {
     searchRef.current.value = "";
     fileNumberRef.current.value = "";
@@ -125,7 +179,8 @@ const TaskFilter = React.memo(() => {
     serveDateRef.current.value = null;
     nextAppearanceDateRef.current.value = null;
     editedByRef.current.value = null;
-    console.log();
+    staffGroupRef.current.value = null;
+
     dispatch(setFilterListSearchParams([]));
   };
 
@@ -170,57 +225,116 @@ const TaskFilter = React.memo(() => {
     },
   ];
 
+  const staffGroup = [
+    {
+      id: 0,
+      value: "",
+      name: "",
+    },
+    {
+      id: 1,
+      value: "bcps",
+      name: "bcps",
+    },
+    {
+      id: 2,
+      value: "lsb",
+      name: "lsb",
+    },
+    {
+      id: 3,
+      value: "joint",
+      name: "joint",
+    },
+  ];
+
   return (
-    <div className="task-filter p-2">
-      <TextSearch
-        placeholdertext="Name"
-        searchRef={searchRef}
-        handleClick={handlePartyNameSearchClick}
-        label="Party Name"
-      ></TextSearch>
-      <TextSearch
-        placeholdertext="File #"
-        searchRef={fileNumberRef}
-        handleClick={handleCourtFileNumberSearchClick}
-        label="Court/Tribunal File #"
-      ></TextSearch>
-      <TextSearch
-        placeholdertext="Edited by"
-        searchRef={editedByRef}
-        handleClick={handleEditedBySearchClick}
-        label="Edited by"
-      ></TextSearch>
-      <DropdownFilter
-        label="Status"
-        criminalStatusRef={documentStatusRef}
-        handleSelectChagne={handleDocumentStatusSelectChagne}
-        options={documentStatusOptions}
-      ></DropdownFilter>
-      <DropdownFilter
-        label="Criminal Matter"
-        criminalStatusRef={criminalStatusRef}
-        handleSelectChagne={handleSelectChagne}
-        options={crimalStatusOptions}
-      ></DropdownFilter>
-      <DateFilter
-        label="Serve Date"
-        serveDate={serveDateRef}
-        handleDateChange={handleDateChange}
-      ></DateFilter>
-      <DateFilter
-        label="Next Apperance Date"
-        serveDate={nextAppearanceDateRef}
-        handleDateChange={nextAppearanceDateHandler}
-      ></DateFilter>
-      {/* <span >
-        <span className="p-1">
-       
+    <div>
+      <div class="my-2">
+        <TextSearch
+          placeholdertext="Name"
+          searchRef={searchRef}
+          handleClick={handlePartyNameSearchClick}
+          label="Party Name"
+        ></TextSearch>
+        <TextSearch
+          placeholdertext="File #"
+          searchRef={fileNumberRef}
+          handleClick={handleCourtFileNumberSearchClick}
+          label="Court/Tribunal File #"
+        ></TextSearch>
+        <TextSearch
+          placeholdertext="Edited by"
+          searchRef={editedByRef}
+          handleClick={handleEditedBySearchClick}
+          label="Edited by"
+        ></TextSearch>
+        <span className="float-right showFilter" onClick={handleShowFilters}>
+          Show Filters <i className="fa fa-solid fa-filter pr-1"></i>
         </span>
-      </span> */}
-      <Button onClick={handleClearFilter} className="clearSearch m-1">
-        Clear
-        <i className="fa fa-solid fa-filter pr-1"></i>
-      </Button>
+      </div>
+      <div>
+        {filterSearchSelections.map((x, index) => {
+          return (
+            <span className="text-muted">
+              {x.label} : {x.value}
+              <span
+                onClick={() => {
+                  handleDeleteFilter(index);
+                }}
+              >
+                <i className="fa fa-solid fa-close p-2"></i>
+              </span>
+            </span>
+          );
+        })}
+      </div>
+      <div className={`popup-box ${showTaskFilters ? "showbox" : ""}`}>
+        <div className="box">
+          <span className="close-icon" onClick={handleShowFilters}>
+            x
+          </span>
+          <div className="task-filter p-2">
+            <DropdownFilter
+              label="Staff Group"
+              criminalStatusRef={staffGroupRef}
+              handleSelectChagne={handleStaffGroupClick}
+              options={staffGroup}
+            ></DropdownFilter>
+            <DropdownFilter
+              label="Status"
+              criminalStatusRef={documentStatusRef}
+              handleSelectChagne={handleDocumentStatusSelectChagne}
+              options={documentStatusOptions}
+            ></DropdownFilter>
+            <DropdownFilter
+              label="Criminal Matter"
+              criminalStatusRef={criminalStatusRef}
+              handleSelectChagne={handleSelectChagne}
+              options={crimalStatusOptions}
+            ></DropdownFilter>
+            <DateFilter
+              label="Serve Date"
+              serveDate={serveDateRef}
+              handleDateChange={handleDateChange}
+            ></DateFilter>
+            <DateFilter
+              label="Next Apperance Date"
+              serveDate={nextAppearanceDateRef}
+              handleDateChange={nextAppearanceDateHandler}
+            ></DateFilter>
+            <div>
+              <button
+                className="btn btn-success m-2"
+                value="Close"
+                onClick={handleShowFilters}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 });

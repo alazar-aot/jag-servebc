@@ -2,7 +2,7 @@ import React from "react";
 
 const DropdownFilter = (props) => {
   return (
-    <span className="SearchControl">
+    <div className="mx-2">
       <div>
         <span>
           <b>{props.label}</b>
@@ -23,7 +23,7 @@ const DropdownFilter = (props) => {
           })}
         </select>
       </div>
-    </span>
+    </div>
   );
 };
 

@@ -2,7 +2,7 @@ import React from "react";
 
 const DateFilter = (props) => {
   return (
-    <span className="SearchControl">
+    <div className="mx-2">
       <div>
         <span>
           <b>{props.label}</b>
@@ -16,7 +16,7 @@ const DateFilter = (props) => {
           type="date"
         />
       </div>
-    </span>
+    </div>
   );
 };
 

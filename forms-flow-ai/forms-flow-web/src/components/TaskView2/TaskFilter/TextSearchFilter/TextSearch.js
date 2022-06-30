@@ -2,7 +2,7 @@ import React from "react";
 
 const TextSearch = (props) => {
   return (
-    <span className="SearchControl">
+    <div className="SearchControl mr-1">
       <div>
         <span>
           <b>{props.label}</b>
@@ -20,7 +20,7 @@ const TextSearch = (props) => {
           onClick={props.handleClick}
         ></i>
       </div>
-    </span>
+    </div>
   );
 };
 
