@@ -59,6 +59,12 @@ export default React.memo(() => {
   const firstResultsRef = useRef(firstResult);
   const taskListRef = useRef(taskList);
 
+  // Toggle the showApplication variable on the View/Edit button click
+  const [showTaskDetails, setShowTaskDetails] = React.useState(false);
+  const wrapperSetShowTaskDetails = useCallback((val) => {
+    setShowTaskDetails(val);
+  },[setShowTaskDetails]);
+
   useEffect(() => {
     selectedFilterIdRef.current = selectedFilterId;
     bpmTaskIdRef.current = bpmTaskId;
@@ -116,7 +122,7 @@ export default React.memo(() => {
         if (bpmTaskIdRef.current && refreshedTaskId === bpmTaskIdRef.current) {
           dispatch(setBPMTaskDetailLoader(true));
           dispatch(setSelectedTaskID(null)); // unSelect the Task Selected
-          dispatch(push(`/task/`));
+          dispatch(push(`/task_new2/`));
         }
       } else {
         if (selectedFilterIdRef.current) {
@@ -179,12 +185,47 @@ export default React.memo(() => {
     };
   }, [SocketIOCallback, dispatch]);
 
+  const onClickBackButton = () => {
+    dispatch(push(`/task_new2`));
+    setShowTaskDetails(false);
+  };
+
   return (
     <Container fluid id="main">
-      <section>
-        <TaskFilter />
-        <ServiceFlowTaskList />
-      </section>
+      {!showTaskDetails ? (
+        <section>
+          <TaskFilter />
+          <ServiceFlowTaskList showApplicationSetter={wrapperSetShowTaskDetails}/>
+        </section>
+      ) : (
+        <div className="container-task-view">
+          <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+            <a
+              href="#/"
+              className="text-primary"
+              style={{ cursor: "pointer" }}
+              onClick={onClickBackButton}
+            >
+              <span>
+                <span>
+                  <i className="fa fa-angle-left" style={{ color: "black" }} />
+                  &nbsp;
+                </span>
+                Back to search results
+              </span>
+            </a>
+          </div>
+          <Container fluid id="main">
+            <Route path={"/task_new2/:taskId?"}>
+              <ServiceFlowTaskDetails />
+            </Route>
+            <Route path={"/task_new2/:taskId/:notAvailable"}>
+              {" "}
+              <Redirect exact to="/404" />
+            </Route>
+          </Container>
+        </div>
+      )}
     </Container>
   );
 });

@@ -450,10 +450,6 @@ table tr:nth-child(odd) td{
   background-color: lightgray;
 }
 
-// table tr:nth-child(even) td{
-//   background-color: lightgray;
-// }
-
 .button-view-edit {
   background: #003366;
   color: white;
@@ -462,4 +458,8 @@ table tr:nth-child(odd) td{
 .button-view-edit:hover {
   background: #003366;
   color: white;
+}
+
+.container-task-view {
+  margin: 30px;
 }
