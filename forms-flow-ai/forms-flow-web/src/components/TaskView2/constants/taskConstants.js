@@ -4,7 +4,7 @@ export const sortingList = [
   {sortBy:"dueDate",label:"Served Date", sortOrder:"asc"},
   {sortBy:"assignee",label:"Edited by", sortOrder:" "},
   {sortBy:"name",label:"name", sortOrder:" "},
-  {sortBy:"followUpDate",label:"followUpDate", sortOrder:" "},
+  {sortBy:"followUpDate",label:"Next Appearance Date", sortOrder:" "},
   {sortBy:"processVariable",label:"Party", sortOrder:" ", 
     "parameters":{
       "variable" : "partyName",
@@ -133,8 +133,8 @@ export const STAFF_GROUP = 5;
 export const COURT_OR_TRIBUNAL_FILE_NUMBER = 6;
 export const DATE_SERVED = 7;
 export const DATE_SERVED_IN_ISO_FORMAT = 8;
-export const LAWYER_NAME = 9;
-export const REGISTRY = 10;
+export const LAWYER_NAME = 10;
+export const REGISTRY = 9;
 
 // Define list of table headers that need to be displayed
 // Order matters, should map to order of table columns left -> right
@@ -145,7 +145,7 @@ export const TABLE_HEADERS = [
   {label:'Criminal Matter',key:'isCriminal'},
   {label:'Court/Tribunal File #',key:'courtOrTribunalFileNbr'},
   {label:'Date Served',key:'dueDate'},
-  {label:'Next Appearance Date',key:'nextAppearanceDate'},
+  {label:'Next Appearance Date',key:'followUpDate'},
   {label:'Registry',key:'registry'},
   {label:'Document Type',key:'documentType'},
   {label:'Lawyer',key:'lawyerName'},

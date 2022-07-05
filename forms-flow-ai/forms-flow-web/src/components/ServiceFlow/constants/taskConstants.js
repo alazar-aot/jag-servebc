@@ -5,6 +5,62 @@ export const sortingList = [
   {sortBy:"assignee",label:"Assignee", sortOrder:"asc"},
   {sortBy:"name",label:"Task name", sortOrder:"asc"},
   {sortBy:"followUpDate",label:"Follow-up date", sortOrder:"asc"},
+  {sortBy:"partyName",label:"Party", sortOrder:"asc"},
+  {sortBy:"isCriminal",label:"Is Criminal", sortOrder:"asc"},
+  {sortBy:"nextAppearanceDate",label:"Next Appearance Date", sortOrder:"asc"},
+  {sortBy:"staffGroup",label:"Staff Group", sortOrder:"asc"},
+  {sortBy:"courtOrTribunalFileNbr",label:"Court / Tribunal #", sortOrder:"asc"},
+  {sortBy:"servedDate",label:"Served Date", sortOrder:"asc"},
+  {sortBy:"processVariable",label:"Party", sortOrder:"asc", 
+    "parameters":{
+      "variable" : "partyName",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"isCriminal", sortOrder:"asc", 
+    "parameters":{
+      "variable" : "isCriminal",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"nextAppearanceDate", sortOrder:"asc", 
+    "parameters":{
+      "variable" : "nextAppearanceDate",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"staffGroup", sortOrder:"asc", 
+    "parameters":{
+      "variable" : "staffGroup",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"courtOrTribunalFileNbr", sortOrder:"asc", 
+    "parameters":{
+      "variable" : "courtOrTribunalFileNbr",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"servedDate", sortOrder:"asc", 
+    "parameters":{
+      "variable" : "servedDate",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"nextAppearanceDateFormat", sortOrder:"asc", 
+    "parameters":{
+      "variable" : "nextAppearanceDateFormat",
+      "type" : "Object"
+  }},
+  {sortBy:"processVariable",label:"serveDateInISOFormat", sortOrder:"asc", 
+  "parameters":{
+    "variable" : "serveDateInISOFormat",
+    "type" : "Object"
+}},
+  {sortBy:"processVariable",label:"lawyerName", sortOrder:"asc", 
+  "parameters":{
+    "variable" : "lawyerName",
+    "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"registry", sortOrder:"asc", 
+  "parameters":{
+    "variable" : "registry",
+    "type" : "String"
+  }}
 ];
 
 export const searchData = [
@@ -62,5 +118,5 @@ export const taskFilters = [
 
 export const ALL_TASKS="All tasks"
 export const QUERY_TYPES= {ANY:"ANY",ALL:"ALL"};
-export const MAX_RESULTS= 15; //maxResults
+export const MAX_RESULTS= 30; //maxResults
 
