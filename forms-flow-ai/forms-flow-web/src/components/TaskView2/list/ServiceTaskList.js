@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ListGroup, Row, Col, Table, Button } from "react-bootstrap";
+import { ListGroup, Row, Col, Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchServiceTaskList } from "../../../apiManager/services/bpmTaskServices";
 import {
@@ -7,30 +7,25 @@ import {
   setBPMTaskLoader,
 } from "../../../actions/bpmTaskActions";
 import Loading from "../../../containers/Loading";
-import moment from "moment";
+// import moment from "moment";
 // eslint-disable-next-line no-unused-vars
-import {
-  getProcessDataFromList,
-  getFormattedDateAndTime,
-} from "../../../apiManager/services/formatterService";
-import TaskFilterComponent from "./search/TaskFilterComponent";
+// import {
+//   getProcessDataFromList,
+//   getFormattedDateAndTime,
+// } from "../../../apiManager/services/formatterService";
+// import TaskFilterComponent from "./search/TaskFilterComponent";
 import Pagination from "react-js-pagination";
 import { push } from "connected-react-router";
-import {
-  MAX_RESULTS,
-  DOCUMENT_STATUS,
-  PARTY_NAME,
-  IS_CRIMINAL,
-  NEXT_APPEARANCE_DATE,
-  RESPONSIBILITY,
-  COURT_OR_TRIBUNAL_FILE_NUMBER,
-  DATE_SERVED,
-} from "../constants/taskConstants";
+import { MAX_RESULTS } from "../constants/taskConstants";
 import { getFirstResultIndex } from "../../../apiManager/services/taskSearchParamsFormatterService";
-import TaskVariable from "./TaskVariable";
-
 import { sortingList } from "../constants/taskConstants";
 import { setFilterListSortParams } from "../../../actions/bpmTaskActions";
+
+// Import Table Components
+import TaskTable from "./TaskTable";
+
+
+
 
 const ServiceFlowTaskList = React.memo(
   ({ showApplicationSetter: showTaskDetailsSetter }) => {
@@ -59,12 +54,15 @@ const ServiceFlowTaskList = React.memo(
             v.name === "nextAppearanceDate" ||
             v.name === "staffGroup" ||
             v.name === "courtOrTribunalFileNbr" ||
-            v.name === "servedDate"
+            v.name === "servedDate" ||
+            v.name === "lawyerName" ||
+            v.name === "registry"
           );
         });
         return taskVariableList.length > 0;
       });
       setTaskServeLegalDocs(filteredTasks);
+      // console.log('Task List: ', taskList);
     }, [taskList]);
 
     const bpmTaskId = useSelector((state) => state.bpmTasks.taskId);
@@ -144,18 +142,13 @@ const ServiceFlowTaskList = React.memo(
     const [sortOptions, setSortOptions] = useState([]);
 
     const addSort = (sort) => {
-      console.log("sortList ", sortList);
       let updatedSortList = [...sortList];
       updatedSortList.push({ ...sort });
-      console.log("updatedSortList ", updatedSortList);
       // ******** Why is the updateSortList(updatedSortList); not updating sortList?? ****
       updateSortList(updatedSortList);
-      console.log("sortList ", sortList);
     };
 
     useEffect(() => {
-      console.log("useeffect");
-      console.log(sortList);
       setSortOptions(getSortOptions(sortList));
       dispatch(setFilterListSortParams(sortList));
     }, [sortList, dispatch]);
@@ -180,7 +173,6 @@ const ServiceFlowTaskList = React.memo(
     };
 
     const sorter = () => {
-      console.log("test");
       console.log(sortOptions);
     };
 
@@ -189,7 +181,6 @@ const ServiceFlowTaskList = React.memo(
       console.log(sortOptions);
 
       if (sortList.length > 0) {
-        console.log("test");
         deleteSort(0);
       }
 
@@ -212,153 +203,37 @@ const ServiceFlowTaskList = React.memo(
         }
       });
 
-      console.log(sortOptions);
-      console.log(sortList);
-
       //addSort(sort);
     };
+
+    // Define list of table headers that need to be displayed
+    // Order matters, should map to order of table columns left -> right
+    const tableHeaders = [
+      'Party',
+      'Status',
+      'Responsibility', 
+      'Criminal Matter', 
+      'Court/Tribunal File #', 
+      'Date Served', 
+      'Next Appearance Date', 
+      'Registry', 
+      'Document Type', 
+      'Lawyer',
+      'Edited by',
+      'View/Edit Form'
+    ];
 
     const renderTaskTable = () => {
       if ((tasksCount || taskList.length) && selectedFilter) {
         return (
           <>
-            <table>
-              <thead className="custom-table-header">
-                <tr>
-                  <th className="custom-th">
-                    Party{" "}
-                    <i
-                      className="fa fa-angle-down fa-lg font-weight-light"
-                      dat-title="Descending"
-                      onClick={() => partySort("assignee", "desc")}
-                    />
-                  </th>
-                  <th className="custom-th">
-                    Status{" "}
-                    <i
-                      className="fa fa-angle-down fa-lg font-weight-light"
-                      dat-title="Descending"
-                      onClick={() => sorter()}
-                    />
-                  </th>
-                  <th className="custom-th">
-                    Responsibility{" "}
-                    <i
-                      className="fa fa-angle-down fa-lg font-weight-light"
-                      dat-title="Descending"
-                      onClick={() => sorter("staffGroup")}
-                    />
-                  </th>
-                  <th className="custom-th">
-                    Criminal{" "}
-                    <i
-                      className="fa fa-angle-down fa-lg font-weight-light"
-                      dat-title="Descending"
-                      onClick={() => sorter("isCriminal")}
-                    />
-                  </th>
-                  <th className="custom-th">
-                    Court/Tribunal File #{" "}
-                    <i
-                      className="fa fa-angle-down fa-lg font-weight-light"
-                      dat-title="Descending"
-                      onClick={() => sorter("courtOrTribunalFileNbr")}
-                    />
-                  </th>
-                  <th className="custom-th">
-                    Registry{" "}
-                    <i
-                      className="fa fa-angle-down fa-lg font-weight-light"
-                      dat-title="Descending"
-                      onClick={() => sorter()}
-                    />
-                  </th>
-                  <th className="custom-th">
-                    Date Served{" "}
-                    <i
-                      className="fa fa-angle-down fa-lg font-weight-light"
-                      dat-title="Descending"
-                      onClick={() => sorter("servedDate")}
-                    />
-                  </th>
-                  <th className="custom-th">
-                    Next Appearance Date{" "}
-                    <i
-                      className="fa fa-angle-down fa-lg font-weight-light"
-                      dat-title="Descending"
-                      onClick={() => sorter("nextAppearanceDate")}
-                    />
-                  </th>
-                  <th className="custom-th">
-                    Edited by{" "}
-                    <i
-                      className="fa fa-angle-down fa-lg font-weight-light"
-                      dat-title="Descending"
-                      onClick={() => sorter("assignee")}
-                    />
-                  </th>
-                  <th>View/Edit Form </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {taskServeLegalDocs.map((task, index) => (
-                  <tr key={task.id}>
-                    <td>
-                      {/* Party */}
-                      {task._embedded.variable[PARTY_NAME].value}
-                    </td>
-                    <td>
-                      {/* Status */}
-                      {task._embedded.variable[DOCUMENT_STATUS].value}
-                    </td>
-                    <td>
-                      {/* Responsibility */}
-                      {task._embedded.variable[RESPONSIBILITY].value}
-                    </td>
-                    <td>
-                      {/* Criminal */}
-                      {task._embedded.variable[IS_CRIMINAL].value}
-                    </td>
-                    <td>
-                      {/* Court/Tribunal File # */}
-                      {
-                        task._embedded.variable[COURT_OR_TRIBUNAL_FILE_NUMBER]
-                          .value
-                      }
-                    </td>
-                    <td>{/* Registry */}</td>
-                    <td>
-                      {/* Date Served */}
-                      {timeFormatter(
-                        task._embedded.variable[DATE_SERVED].value
-                      )}
-                    </td>
-                    <td>
-                      {/* Next Appearance Date */}
-                      {timeFormatter(
-                        task._embedded.variable[NEXT_APPEARANCE_DATE].value
-                      )}
-                    </td>
-                    <td>
-                      {/* Edited by */}
-                      {task.assignee}
-                    </td>
-                    <td>
-                      {/* View / Edit */}
-                      <Button
-                        className="button-view-edit"
-                        onClick={() => {
-                          onViewEditChanged(task);
-                        }}
-                      >
-                        View/Edit
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <TaskTable 
+              tableHeaders={tableHeaders} 
+              taskServeLegalDocs={taskServeLegalDocs}
+              timeFormatter={timeFormatter}
+              sorter={sorter}
+              onViewEditChanged={onViewEditChanged} 
+            />
 
             <div className="pagination-wrapper">
               <Pagination
