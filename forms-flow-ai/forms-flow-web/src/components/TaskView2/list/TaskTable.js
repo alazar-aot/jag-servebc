@@ -17,7 +17,8 @@ import {
   LAWYER_NAME,
   REGISTRY,
   DOCUMENT_TYPE,
-  STAFF_GROUP
+  STAFF_GROUP,
+  DATE_SERVED_IN_ISO_FORMAT
 } from "../constants/taskConstants";
 
 const TaskTable = React.memo(
@@ -25,16 +26,15 @@ const TaskTable = React.memo(
     return(
       <table>
         <thead className="custom-table-header">
-        <tr>
-          {tableHeaders.map((header) => (
-            <TableHeader header={header}/>
-          ))}
-        </tr>
+          <tr>
+            {tableHeaders.map((header) => (
+              <TableHeader header={header}/>
+            ))}
+          </tr>
         </thead>
         <tbody>
           {taskServeLegalDocs.map((task) => (
-            <>
-              {/* {console.log('TASK: ', task)} */}
+
               <tr key={task.id} className="custom-th">
                 {/* Party Name */}
                 <TableData indexOfData={task._embedded.variable[PARTY_NAME].value} />
@@ -47,7 +47,7 @@ const TaskTable = React.memo(
                 {/* Court/Tribunal File # */}
                 <TableData indexOfData={task._embedded.variable[COURT_OR_TRIBUNAL_FILE_NUMBER].value} />
                 {/* Date Served */}
-                <TableData indexOfData={task._embedded.variable[DATE_SERVED].value} formatter={timeFormatter} />
+                <TableData indexOfData={task.due}/>
                 {/* Next Appearance Date */}
                 <TableData indexOfData={task._embedded.variable[NEXT_APPEARANCE_DATE].value} formatter={timeFormatter} />
                 {/* Registry */}
@@ -71,7 +71,7 @@ const TaskTable = React.memo(
                 } 
                 />
               </tr>
-            </>
+            
           ))}
         </tbody>
       </table>

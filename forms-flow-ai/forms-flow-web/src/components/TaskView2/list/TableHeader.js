@@ -19,7 +19,7 @@ const TableHeader = React.memo(
     const resetIcons = () => {
       sortingList.forEach((sortOption) => {
         // if the sortOption is the default sort, set to asc (default sort should never be blank)
-        if (sortOption.parameters != null && sortOption.parameters.variable === TASK_FILTER_LIST_DEFAULT_PARAM.parameters.variable){
+        if (sortOption.sortBy === TASK_FILTER_LIST_DEFAULT_PARAM.sortBy){
           sortOption.sortOrder = 'asc';
         }
         // else, set all other sort orders to blank
@@ -68,7 +68,7 @@ const TableHeader = React.memo(
       if (sort == null) {
         return <th className="custom-th">
           {header.label}{" "}
-        <i className={iconDirection}/>
+          <i className={iconDirection}/>
         </th>
       }
 

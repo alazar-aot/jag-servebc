@@ -1,11 +1,11 @@
 export const sortingList = [
-  {sortBy:"created",label:"Modified", sortOrder:"asc"},
+  {sortBy:"created",label:"Modified", sortOrder:" "},
   {sortBy:"priority",label:"Priority", sortOrder:" "},
-  {sortBy:"dueDate",label:"Served Date", sortOrder:" "},
+  {sortBy:"dueDate",label:"Served Date", sortOrder:"asc"},
   {sortBy:"assignee",label:"Edited by", sortOrder:" "},
   {sortBy:"name",label:"name", sortOrder:" "},
   {sortBy:"followUpDate",label:"followUpDate", sortOrder:" "},
-  {sortBy:"processVariable",label:"Party", sortOrder:"asc", 
+  {sortBy:"processVariable",label:"Party", sortOrder:" ", 
     "parameters":{
       "variable" : "partyName",
       "type" : "String"
@@ -58,6 +58,11 @@ export const sortingList = [
   {sortBy:"processVariable",label:"Document Type", sortOrder:" ", 
     "parameters":{
       "variable" : "documentType",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"Served Date ISO", sortOrder:" ", 
+    "parameters":{
+      "variable" : "serveDateInISOFormat",
       "type" : "String"
   }}
 ];
@@ -139,7 +144,7 @@ export const TABLE_HEADERS = [
   {label:'Responsibility',key:'staffGroup'},
   {label:'Criminal Matter',key:'isCriminal'},
   {label:'Court/Tribunal File #',key:'courtOrTribunalFileNbr'},
-  {label:'Date Served',key:'servedDate'},
+  {label:'Date Served',key:'dueDate'},
   {label:'Next Appearance Date',key:'nextAppearanceDate'},
   {label:'Registry',key:'registry'},
   {label:'Document Type',key:'documentType'},
