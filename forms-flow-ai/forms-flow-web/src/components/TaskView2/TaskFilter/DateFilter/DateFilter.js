@@ -1,4 +1,5 @@
 import React from "react";
+import DateRangePicker from "@wojtekmaj/react-daterange-picker";
 
 const DateFilter = (props) => {
   return (
@@ -9,12 +10,7 @@ const DateFilter = (props) => {
         </span>
       </div>
       <div>
-        <input
-          className="form-control"
-          ref={props.serveDate}
-          onChange={props.handleDateChange}
-          type="date"
-        />
+        <DateRangePicker onChange={props.onChange} value={props.dateRange} />
       </div>
     </div>
   );

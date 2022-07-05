@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const DropdownFilter = (props) => {
   return (
@@ -9,11 +9,7 @@ const DropdownFilter = (props) => {
         </span>
       </div>
       <div>
-        <select
-          className="form-control"
-          ref={props.criminalStatusRef}
-          onChange={props.handleSelectChagne}
-        >
+        <select className="form-control" ref={props.controlRef}>
           {props.options.map((x) => {
             return (
               <option key={x.id} value={x.value}>
