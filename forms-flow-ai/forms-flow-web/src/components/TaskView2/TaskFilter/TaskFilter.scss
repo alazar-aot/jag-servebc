@@ -1,24 +1,71 @@
 
-.popup-box {
-  position: fixed;
-  background: #00000050;
-  width: 100%;
-  height: 100vh;
-  top: 0;
-  left: 0;
-  z-index: 100;
-  display: none;
+.checkbox-ok-btn
+{
+    background-color: #3a76b2;
+    color: white;
+    border: 0px;
+
+    margin: 2px;
+    width:50px;
 }
 
+.modal-header-custom
+{
+    outline: 1px solid #003366 !important;
+    background-color: #003366 !important;
+    border-radius: 0px;
+    border-bottom: 1px solid #003366 ;
+}
 .showbox
 {
     display: block;
+}
+
+.buttonColor
+{
+    background-color: #003366 !important;
 }
 
 .showFilter
 {
     color: #003366 !important;
 }
+
+.modal-header > button.close
+{
+    opacity: 100 !important;
+    color: white;
+}
+
+.modal-header > button.close:hover
+{
+    opacity: 100 !important;
+    color: white;
+}
+
+
+.custom-checkbox-dropdown-parent
+{
+    display: block;
+    width: 100%;
+}
+
+.my-active
+{
+    display: block !important;
+}
+
+.custom-checkbox-dropdown
+{    position: absolute;
+    z-index: 1000;
+    background: white;
+    opacity: 100;
+    box-shadow: 1px;
+    border: 1px solid;
+    box-shadow: 1px 1px 1px 1px grey;
+    display: none;
+}
+
 
 .box {
   position: relative;
