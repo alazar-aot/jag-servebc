@@ -6,7 +6,7 @@ import { setFilterListSortParams } from "../../../actions/bpmTaskActions";
 import { TASK_FILTER_LIST_DEFAULT_PARAM } from "../../../constants/taskConstants";
 
 const TableHeader = React.memo(
-  ({headerTitle}) => {
+  ({header}) => {
 
     const sortingData = useSelector((state) => state.bpmTasks.filterListSortParams.sorting);
     const [sortList, updateSortList] = useState(sortingData);
@@ -56,9 +56,9 @@ const TableHeader = React.memo(
 
       // Get the current column that is to be sorted
       let sort = sortingList.filter((sortOption) => 
-          sortOption.sortBy === props.taskName ||
+          sortOption.sortBy === props.header.key ||
           (sortOption.parameters != null &&
-          sortOption.parameters.variable === props.taskName)
+          sortOption.parameters.variable === props.header.key)
       )
       sort = sort[0];
 
@@ -67,7 +67,7 @@ const TableHeader = React.memo(
       // null check
       if (sort == null) {
         return <th className="custom-th">
-          undefined{" "}
+          {header.label}{" "}
         <i className={iconDirection}/>
         </th>
       }
@@ -90,7 +90,7 @@ const TableHeader = React.memo(
     }
 
     return (
-      <ColumnHeader taskName={headerTitle}/>
+      <ColumnHeader header={header}/>
     );
   }
 );

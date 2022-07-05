@@ -27,7 +27,7 @@ const TaskTable = React.memo(
         <thead className="custom-table-header">
         <tr>
           {tableHeaders.map((header) => (
-            <TableHeader headerTitle={header.key}/>
+            <TableHeader header={header}/>
           ))}
         </tr>
         </thead>
