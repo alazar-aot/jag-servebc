@@ -15,6 +15,12 @@ const TableData = React.memo(
           {"NCQ"}
         </td>
       );
+    } else if(data === 'Inprogress'){
+      return (
+        <td>
+          {"In Progress"}
+        </td>
+      );
     } else {
       return (
         <td>

@@ -9,11 +9,10 @@ import {
 import Loading from "../../../containers/Loading";
 import Pagination from "react-js-pagination";
 import { push } from "connected-react-router";
-import { MAX_RESULTS } from "../constants/taskConstants";
 import { getFirstResultIndex } from "../../../apiManager/services/taskSearchParamsFormatterService";
 // Import Table Components
 import TaskTable from "./TaskTable";
-import { TABLE_HEADERS } from "../constants/taskConstants";
+import { MAX_RESULTS, TABLE_HEADERS } from "../constants/taskConstants";
 
 const ServiceFlowTaskList = React.memo(
   ({ showApplicationSetter: showTaskDetailsSetter }) => {
@@ -29,6 +28,8 @@ const ServiceFlowTaskList = React.memo(
     // Only render tasks that are related to the Serve Legal Documents Form
     // Otherwise, the application crashes if a different form has been submitted
     const [taskServeLegalDocs, setTaskServeLegalDocs] = React.useState([]);
+
+
     useEffect(() => {
       // filter task list for Serve Legal Document related tasks
       let filteredTasks = taskList.filter((t) => {
@@ -42,8 +43,11 @@ const ServiceFlowTaskList = React.memo(
             v.name === "staffGroup" ||
             v.name === "courtOrTribunalFileNbr" ||
             v.name === "servedDate" ||
+            v.name === "staffGroup" ||
+            v.name === "serveDateInISOFormat" || 
             v.name === "lawyerName" ||
-            v.name === "registry"
+            v.name === "registry" ||
+            v.name === "documentType"
           );
         });
         return taskVariableList.length > 0;
@@ -118,8 +122,8 @@ const ServiceFlowTaskList = React.memo(
                 totalItemsCount={tasksCount}
                 pageRangeDisplayed={3}
                 onChange={handlePageChange}
-                prevPageText="<"
-                nextPageText=">"
+                prevPageText="Previous"
+                nextPageText="Next"
               />
             </div>
           </>

@@ -67,7 +67,7 @@ const TableHeader = React.memo(
       // null check
       if (sort == null) {
         return <th className="custom-th">
-          {header.label}{" "}
+          {header.label}
           <i className={iconDirection}/>
         </th>
       }
@@ -83,7 +83,7 @@ const TableHeader = React.memo(
       }
 
       return <th className="custom-th" onClick={()=>{ toggleSortOrder(sort) }}>
-          {sort.label}{" "}
+          {sort.label}
           <i className={iconDirection}/>
       </th>
       

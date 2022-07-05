@@ -13,12 +13,10 @@ import {
   IS_CRIMINAL,
   NEXT_APPEARANCE_DATE,
   COURT_OR_TRIBUNAL_FILE_NUMBER,
-  DATE_SERVED,
   LAWYER_NAME,
   REGISTRY,
   DOCUMENT_TYPE,
   STAFF_GROUP,
-  DATE_SERVED_IN_ISO_FORMAT
 } from "../constants/taskConstants";
 
 const TaskTable = React.memo(
@@ -47,7 +45,7 @@ const TaskTable = React.memo(
                 {/* Court/Tribunal File # */}
                 <TableData indexOfData={task._embedded.variable[COURT_OR_TRIBUNAL_FILE_NUMBER].value} />
                 {/* Date Served */}
-                <TableData indexOfData={task.due}/>
+                <TableData indexOfData={task.due} formatter={timeFormatter}/>
                 {/* Next Appearance Date */}
                 <TableData indexOfData={task._embedded.variable[NEXT_APPEARANCE_DATE].value} formatter={timeFormatter} />
                 {/* Registry */}

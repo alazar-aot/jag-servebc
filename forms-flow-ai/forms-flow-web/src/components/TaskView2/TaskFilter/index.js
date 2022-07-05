@@ -396,7 +396,7 @@ const TaskFilter = React.memo(() => {
 
   return (
     <div>
-      <div class="my-2">
+      <div className="my-2">
         <TextSearch
           placeholdertext="Name"
           searchRef={searchRef}
