@@ -4,6 +4,8 @@ import React from "react";
 import TableHeader from "./TableHeader";
 import TableData from "./TableData";
 
+import {Button} from 'react-bootstrap';
+
 // Import Constants
 import {
   DOCUMENT_STATUS,
@@ -18,18 +20,14 @@ import {
   STAFF_GROUP
 } from "../constants/taskConstants";
 
-import {Button} from 'react-bootstrap';
-
-
-
 const TaskTable = React.memo(
-  ({tableHeaders, taskServeLegalDocs, timeFormatter, sorter, onViewEditChanged}) => {
+  ({tableHeaders, taskServeLegalDocs, timeFormatter, onViewEditChanged}) => {
     return(
       <table>
         <thead className="custom-table-header">
         <tr>
-          {tableHeaders.map((title) => (
-            <TableHeader headerTitle={title} onClickHandler={sorter} />
+          {tableHeaders.map((header) => (
+            <TableHeader headerTitle={header.key}/>
           ))}
         </tr>
         </thead>
@@ -55,8 +53,7 @@ const TaskTable = React.memo(
                 {/* Registry */}
                 <TableData indexOfData={task._embedded.variable[REGISTRY].value} />
                 {/* Document Type */}
-                <TableData indexOfData={" "} />
-                {/* <TableData indexOfData={task._embedded.variable[DOCUMENT_TYPE].value} /> */}
+                <TableData indexOfData={task._embedded.variable[DOCUMENT_TYPE].value} />
                 {/* Lawyer Name */}
                 <TableData indexOfData={task._embedded.variable[LAWYER_NAME].value} />
                 {/* Edited by */}

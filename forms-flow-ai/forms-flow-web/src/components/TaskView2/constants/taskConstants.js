@@ -1,16 +1,65 @@
 export const sortingList = [
   {sortBy:"created",label:"Modified", sortOrder:"asc"},
-  {sortBy:"priority",label:"Priority", sortOrder:"asc"},
-  {sortBy:"dueDate",label:"Due date", sortOrder:"asc"},
-  {sortBy:"assignee",label:"Assignee", sortOrder:"asc"},
-  {sortBy:"name",label:"Task name", sortOrder:"asc"},
-  {sortBy:"followUpDate",label:"Follow-up date", sortOrder:"asc"},
-  {sortBy:"partyName",label:"Party", sortOrder:"asc"},
-  {sortBy:"isCriminal",label:"Is Criminal", sortOrder:"asc"},
-  {sortBy:"nextAppearanceDate",label:"Next Appearance Date", sortOrder:"asc"},
-  {sortBy:"staffGroup",label:"Staff Group", sortOrder:"asc"},
-  {sortBy:"courtOrTribunalFileNbr",label:"Court / Tribunal #", sortOrder:"asc"},
-  {sortBy:"servedDate",label:"Served Date", sortOrder:"asc"},
+  {sortBy:"priority",label:"Priority", sortOrder:" "},
+  {sortBy:"dueDate",label:"Served Date", sortOrder:" "},
+  {sortBy:"assignee",label:"Edited by", sortOrder:" "},
+  {sortBy:"name",label:"name", sortOrder:" "},
+  {sortBy:"followUpDate",label:"followUpDate", sortOrder:" "},
+  {sortBy:"processVariable",label:"Party", sortOrder:"asc", 
+    "parameters":{
+      "variable" : "partyName",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"Criminal Matter", sortOrder:" ", 
+    "parameters":{
+      "variable" : "isCriminal",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"Next Appearance Date", sortOrder:" ", 
+    "parameters":{
+      "variable" : "nextAppearanceDate",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"Responsibility", sortOrder:" ", 
+    "parameters":{
+      "variable" : "staffGroup",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"Court/Tribunal File #", sortOrder:" ", 
+    "parameters":{
+      "variable" : "courtOrTribunalFileNbr",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"Served Date old", sortOrder:" ", 
+    "parameters":{
+      "variable" : "servedDate",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"Next AppearanceDateFormat", sortOrder:" ", 
+    "parameters":{
+      "variable" : "nextAppearanceDateFormat",
+      "type" : "Object"
+  }},
+  {sortBy:"processVariable",label:"Status", sortOrder:" ", 
+    "parameters":{
+      "variable" : "documentStatus",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"Lawyer Name", sortOrder:" ", 
+    "parameters":{
+      "variable" : "lawyerName",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"Registry", sortOrder:" ", 
+    "parameters":{
+      "variable" : "registry",
+      "type" : "String"
+  }},
+  {sortBy:"processVariable",label:"Document Type", sortOrder:" ", 
+    "parameters":{
+      "variable" : "documentType",
+      "type" : "String"
+  }}
 ];
 
 export const searchData = [
@@ -81,3 +130,20 @@ export const DATE_SERVED = 7;
 export const DATE_SERVED_IN_ISO_FORMAT = 8;
 export const LAWYER_NAME = 9;
 export const REGISTRY = 10;
+
+// Define list of table headers that need to be displayed
+// Order matters, should map to order of table columns left -> right
+export const TABLE_HEADERS = [
+  {label:'Party',key:'partyName'},
+  {label:'Status',key:'documentStatus'},
+  {label:'Responsibility',key:'staffGroup'},
+  {label:'Criminal Matter',key:'isCriminal'},
+  {label:'Court/Tribunal File #',key:'courtOrTribunalFileNbr'},
+  {label:'Date Served',key:'servedDate'},
+  {label:'Next Appearance Date',key:'nextAppearanceDate'},
+  {label:'Registry',key:'registry'},
+  {label:'Document Type',key:'documentType'},
+  {label:'Lawyer',key:'lawyerName'},
+  {label:'Edited by',key:'assignee'},
+  {label:'View/Edit Form',key:''},
+];
