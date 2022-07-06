@@ -9,9 +9,9 @@ const CheckBoxDropDownFilter = (props) => {
     let items = [...selectedItems];
     let selectedValue = e.target.value;
     let isChecked = e.target.checked;
-    if (isChecked && items.indexOf(selectedValue) == -1) {
+    if (isChecked && items.indexOf(selectedValue) === -1) {
       items.push(selectedValue);
-    } else if (!isChecked && items.indexOf(selectedValue) != -1) {
+    } else if (!isChecked && items.indexOf(selectedValue) !== -1) {
       items.splice(items.indexOf(selectedValue), 1);
     }
 
@@ -20,7 +20,7 @@ const CheckBoxDropDownFilter = (props) => {
   };
 
   const checkIfExists = (item) => {
-    return selectedItems.indexOf(item) != -1 ? true : false;
+    return selectedItems.indexOf(item) !== -1 ? true : false;
   };
 
   useEffect(() => {}, [selectedItems]);

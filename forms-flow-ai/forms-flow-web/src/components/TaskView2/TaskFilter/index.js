@@ -6,14 +6,10 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import classes from "./TaskFilter.scss";
 import DropdownFilter from "./DropdownFilter/DropdownFilter";
-import DateFilter from "./DateFilter/DateFilter";
-import user from "../../../modules/userDetailReducer";
 import TextSearch from "./TextSearchFilter/TextSearch";
 import { Button } from "react-bootstrap";
 import { Modal } from "react-bootstrap";
 import DatePicker from "react-datepicker";
-import DateRangePicker from "@wojtekmaj/react-daterange-picker";
-import CheckBoxDropDownFilter from "./CheckBoxDropDownFilter/CheckBoxDropDownFilter";
 import {
   crimalStatusOptions,
   documentStatusOptions,
@@ -21,7 +17,6 @@ import {
   staffGroup,
 } from "./Constants";
 import Filters from "./Filters";
-import { set } from "lodash";
 
 const TaskFilter = React.memo(() => {
   const dispatch = useDispatch();
@@ -53,7 +48,7 @@ const TaskFilter = React.memo(() => {
 
   useEffect(() => {
     dispatch(setIsVariableValueIgnoreCase(true));
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     console.log("filterSearchSelections", filterSearchSelections);
@@ -65,21 +60,22 @@ const TaskFilter = React.memo(() => {
 
   useEffect(() => {
     filterList.map((x) => {
-      if (x.name == "staffGroup") {
+      if (x.name === "staffGroup") {
         staffGroupRef.current.value = x.value;
       }
 
-      if (x.name == "isCriminal") {
+      if (x.name === "isCriminal") {
         criminalStatusRef.current.value = x.value;
       }
 
-      if (x.name == "documentStatus") {
+      if (x.name === "documentStatus") {
         documentStatusRef.current.value = x.value;
       }
 
-      if (x.name == "documentType") {
+      if (x.name === "documentType") {
         documentTypeRef.current.value = x.value;
       }
+      return true;
     });
   }, [showTaskFilters]);
 
@@ -98,7 +94,7 @@ const TaskFilter = React.memo(() => {
   const applyFilter = () => {
     let newSearchArray = [];
 
-    if (staffGroupRef.current.value != "") {
+    if (staffGroupRef.current.value !== "") {
       newSearchArray.push(
         createSearchObject(
           "processVariables",
@@ -111,7 +107,7 @@ const TaskFilter = React.memo(() => {
       );
     }
 
-    if (criminalStatusRef.current.value != "") {
+    if (criminalStatusRef.current.value !== "") {
       newSearchArray.push(
         createSearchObject(
           "processVariables",
@@ -124,7 +120,7 @@ const TaskFilter = React.memo(() => {
       );
     }
 
-    if (documentStatusRef.current.value != "") {
+    if (documentStatusRef.current.value !== "") {
       newSearchArray.push({
         key: "processVariables",
         label: "Document Status",
@@ -135,7 +131,7 @@ const TaskFilter = React.memo(() => {
       });
     }
 
-    if (documentTypeRef.current.value != "") {
+    if (documentTypeRef.current.value !== "") {
       newSearchArray.push({
         key: "processVariables",
         label: "Document Type",
@@ -156,7 +152,7 @@ const TaskFilter = React.memo(() => {
     //   });
     // });
 
-    if (nxtApperanceStartDate != null) {
+    if (nxtApperanceStartDate !== null) {
       newSearchArray.push({
         key: "followUp",
         label: "Next Apperance Date (From)",
@@ -178,7 +174,7 @@ const TaskFilter = React.memo(() => {
       });
     }
 
-    if (startDate != null) {
+    if (startDate !== null) {
       newSearchArray.push({
         key: "due",
         label: "Serve Date (From):",
@@ -208,7 +204,7 @@ const TaskFilter = React.memo(() => {
   const applySearch = () => {
     let newSearchArray = [];
 
-    if (searchRef.current.value != "") {
+    if (searchRef.current.value !== "") {
       newSearchArray.push({
         key: "processVariables",
         label: "Party",
@@ -219,7 +215,7 @@ const TaskFilter = React.memo(() => {
       });
     }
 
-    if (fileNumberRef.current.value != "") {
+    if (fileNumberRef.current.value !== "") {
       newSearchArray.push({
         key: "processVariables",
         label: "Court/Tribunal File #",
@@ -230,7 +226,7 @@ const TaskFilter = React.memo(() => {
       });
     }
 
-    if (editedByRef.current.value != "") {
+    if (editedByRef.current.value !== "") {
       newSearchArray.push({
         key: "assignee",
         label: "Edited By",
@@ -240,7 +236,7 @@ const TaskFilter = React.memo(() => {
       });
     }
 
-    if (lawyerNameRef.current.value != "") {
+    if (lawyerNameRef.current.value !== "") {
       newSearchArray.push({
         key: "processVariables",
         label: "Lawyer Name",
@@ -267,27 +263,27 @@ const TaskFilter = React.memo(() => {
 
   const handleDeleteFilter = (index) => {
     console.log(index);
-    var filteredArr = [...filterSearchSelections];
+    let filteredArr = [...filterSearchSelections];
 
     let selectedItem = { ...filteredArr[index] };
 
-    if (selectedItem.key == "followUp") {
-      let list = filterList.filter((x) => x.key != "followUp");
+    if (selectedItem.key === "followUp") {
+      let list = filterList.filter((x) => x.key !== "followUp");
       setFilterList(list);
-      var newlist = filterSearchSelections.filter((x) => x.key != "followUp");
+      let newlist = filterSearchSelections.filter((x) => x.key !== "followUp");
       setNxtApperanceEndDate(null);
       setNxtApperanceStartDate(null);
       dispatch(setFilterListSearchParams(newlist));
-    } else if (selectedItem.key == "due") {
-      let list = filterList.filter((x) => x.key != "due");
+    } else if (selectedItem.key === "due") {
+      let list = filterList.filter((x) => x.key !== "due");
       setFilterList(list);
-      var newlist = filterSearchSelections.filter((x) => x.key != "due");
+      let newlist = filterSearchSelections.filter((x) => x.key !== "due");
       setStartDate(null);
       setEndDate(null);
       dispatch(setFilterListSearchParams(newlist));
     } else {
-      if (selectedItem.key == "processVariables") {
-        let list = filterList.filter((x) => x.name != selectedItem.name);
+      if (selectedItem.key === "processVariables") {
+        let list = filterList.filter((x) => x.name !== selectedItem.name);
         setFilterList(list);
       }
 
@@ -299,18 +295,18 @@ const TaskFilter = React.memo(() => {
     }
   };
 
-  const handleClearFilter = () => {
-    searchRef.current.value = "";
-    fileNumberRef.current.value = "";
-    documentStatusRef.current.value = "";
-    criminalStatusRef.current.value = "";
-    serveDateRef.current.value = null;
-    nextAppearanceDateRef.current.value = null;
-    editedByRef.current.value = null;
-    staffGroupRef.current.value = null;
+  // const handleClearFilter = () => {
+  //   searchRef.current.value = "";
+  //   fileNumberRef.current.value = "";
+  //   documentStatusRef.current.value = "";
+  //   criminalStatusRef.current.value = "";
+  //   serveDateRef.current.value = null;
+  //   nextAppearanceDateRef.current.value = null;
+  //   editedByRef.current.value = null;
+  //   staffGroupRef.current.value = null;
 
-    dispatch(setFilterListSearchParams([]));
-  };
+  //   dispatch(setFilterListSearchParams([]));
+  // };
 
   return (
     <div>
