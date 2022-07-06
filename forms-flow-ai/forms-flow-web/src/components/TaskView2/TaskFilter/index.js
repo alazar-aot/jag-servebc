@@ -14,15 +14,26 @@ import { Modal } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import DateRangePicker from "@wojtekmaj/react-daterange-picker";
 import CheckBoxDropDownFilter from "./CheckBoxDropDownFilter/CheckBoxDropDownFilter";
+import {
+  crimalStatusOptions,
+  documentStatusOptions,
+  documentType,
+  staffGroup,
+} from "./Constants";
+import Filters from "./Filters";
+import { set } from "lodash";
 
 const TaskFilter = React.memo(() => {
+  const dispatch = useDispatch();
+
+  const [showTaskFilters, setShowTaskFilters] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-
   const [nxtApperanceStartDate, setNxtApperanceStartDate] = useState(null);
   const [nxtApperanceEndDate, setNxtApperanceEndDate] = useState(null);
-
-  //const [dateRange, setDateRange] = useState([new Date(), new Date()]);
+  const [filterList, setFilterList] = useState([]);
+  const [searchList, setSearchList] = useState([]);
+  //const [selectedStaffGroups, setSelectedStaffGroups] = useState([]);
 
   const searchRef = useRef();
   const criminalStatusRef = useRef();
@@ -34,70 +45,89 @@ const TaskFilter = React.memo(() => {
   const editedByRef = useRef();
   const staffGroupRef = useRef();
 
-  const [showTaskFilters, setShowTaskFilters] = useState(false);
+  const lawyerNameRef = useRef();
 
   const filterSearchSelections = useSelector(
     (state) => state.bpmTasks.filterSearchSelections
   );
 
-  const [selectedStaffGroups, setSelectedStaffGroups] = useState([]);
-
-  const [filterList, setFilterList] = useState([]);
-  const [searchList, setSearchList] = useState([]);
-
-  const setValueInControls = () => {};
-
   useEffect(() => {
     dispatch(setIsVariableValueIgnoreCase(true));
   }, []);
 
-  setValueInControls();
-  console.log(
-    "state.bpmTasks",
-    useSelector((state) => state.bpmTasks)
-  );
-
-  const dispatch = useDispatch();
-
   useEffect(() => {
     console.log("filterSearchSelections", filterSearchSelections);
-
-    setValueInControls();
   }, [filterSearchSelections]);
 
   const handleShowFilters = () => {
     setShowTaskFilters(!showTaskFilters);
   };
 
+  useEffect(() => {
+    filterList.map((x) => {
+      if (x.name == "staffGroup") {
+        staffGroupRef.current.value = x.value;
+      }
+
+      if (x.name == "isCriminal") {
+        criminalStatusRef.current.value = x.value;
+      }
+
+      if (x.name == "documentStatus") {
+        documentStatusRef.current.value = x.value;
+      }
+
+      if (x.name == "documentType") {
+        documentTypeRef.current.value = x.value;
+      }
+    });
+  }, [showTaskFilters]);
+
+  const createSearchObject = (key, label, name, operator, type, value) => {
+    const obj = {
+      key: key,
+      label: label,
+      name: name,
+      operator: operator,
+      type: type,
+      value: value,
+    };
+    return obj;
+  };
+
   const applyFilter = () => {
     let newSearchArray = [];
 
     if (staffGroupRef.current.value != "") {
-      newSearchArray.push({
-        key: "processVariables",
-        label: "Responsibility",
-        name: "staffGroup",
-        operator: "=",
-        type: "variables",
-        value: staffGroupRef.current.value,
-      });
+      newSearchArray.push(
+        createSearchObject(
+          "processVariables",
+          "Responsibility",
+          "staffGroup",
+          "=",
+          "variables",
+          staffGroupRef.current.value
+        )
+      );
     }
 
     if (criminalStatusRef.current.value != "") {
-      newSearchArray.push({
-        key: "processVariables",
-        label: "isCriminal",
-        name: "isCriminal",
-        operator: "=",
-        type: "variables",
-        value: criminalStatusRef.current.value,
-      });
+      newSearchArray.push(
+        createSearchObject(
+          "processVariables",
+          "Criminal Matter",
+          "isCriminal",
+          "=",
+          "variables",
+          criminalStatusRef.current.value
+        )
+      );
     }
 
     if (documentStatusRef.current.value != "") {
       newSearchArray.push({
         key: "processVariables",
-        label: "documentStatus",
+        label: "Document Status",
         name: "documentStatus",
         operator: "=",
         type: "variables",
@@ -108,7 +138,7 @@ const TaskFilter = React.memo(() => {
     if (documentTypeRef.current.value != "") {
       newSearchArray.push({
         key: "processVariables",
-        label: "documentType",
+        label: "Document Type",
         name: "documentType",
         operator: "=",
         type: "variables",
@@ -116,20 +146,20 @@ const TaskFilter = React.memo(() => {
       });
     }
 
-    selectedStaffGroups.map((x) => {
-      newSearchArray.push({
-        key: "name",
-        label: "Staff Group",
-        operator: "like",
-        type: "string",
-        value: x,
-      });
-    });
+    // selectedStaffGroups.map((x) => {
+    //   newSearchArray.push({
+    //     key: "name",
+    //     label: "Staff Group",
+    //     operator: "like",
+    //     type: "string",
+    //     value: x,
+    //   });
+    // });
 
     if (nxtApperanceStartDate != null) {
       newSearchArray.push({
         key: "followUp",
-        label: "Follow up Date",
+        label: "Next Apperance Date (From)",
         operator: "after",
         type: "date",
         value: `${nxtApperanceStartDate.getFullYear()}-${
@@ -139,7 +169,7 @@ const TaskFilter = React.memo(() => {
 
       newSearchArray.push({
         key: "followUp",
-        label: "Follow up Date",
+        label: "Next Apperance Date (To)",
         operator: "before",
         type: "date",
         value: `${nxtApperanceEndDate.getFullYear()}-${
@@ -150,8 +180,8 @@ const TaskFilter = React.memo(() => {
 
     if (startDate != null) {
       newSearchArray.push({
-        key: "dueDate",
-        label: "Due Date",
+        key: "due",
+        label: "Serve Date (From):",
         operator: "after",
         type: "date",
         value: `${startDate.getFullYear()}-${
@@ -160,8 +190,8 @@ const TaskFilter = React.memo(() => {
       });
 
       newSearchArray.push({
-        key: "dueDate",
-        label: "Due Date",
+        key: "due",
+        label: "Serve Date (To):",
         operator: "before",
         type: "date",
         value: `${endDate.getFullYear()}-${
@@ -181,7 +211,7 @@ const TaskFilter = React.memo(() => {
     if (searchRef.current.value != "") {
       newSearchArray.push({
         key: "processVariables",
-        label: "partyName",
+        label: "Party",
         name: "partyName",
         operator: "like",
         type: "variables",
@@ -192,7 +222,7 @@ const TaskFilter = React.memo(() => {
     if (fileNumberRef.current.value != "") {
       newSearchArray.push({
         key: "processVariables",
-        label: "courtOrTribunalFileNbr",
+        label: "Court/Tribunal File #",
         name: "courtOrTribunalFileNbr",
         operator: "like",
         type: "variables",
@@ -203,10 +233,21 @@ const TaskFilter = React.memo(() => {
     if (editedByRef.current.value != "") {
       newSearchArray.push({
         key: "assignee",
-        label: "Assignee",
+        label: "Edited By",
         operator: "like",
         type: "string",
         value: editedByRef.current.value,
+      });
+    }
+
+    if (lawyerNameRef.current.value != "") {
+      newSearchArray.push({
+        key: "processVariables",
+        label: "Lawyer Name",
+        name: "lawyerName",
+        operator: "like",
+        type: "variables",
+        value: lawyerNameRef.current.value,
       });
     }
 
@@ -217,87 +258,45 @@ const TaskFilter = React.memo(() => {
     console.log("Updated Search Array", newSearchArray);
   };
 
-  const handleStaffGroupClick = (selectedItems) => {
-    //e.preventDefault();
-    console.log("selectedItems", selectedItems);
-    setSelectedStaffGroups(selectedItems);
-    //dispathFilter("staffgroup", "like", staffGroupRef.current.value);
-  };
+  // const handleStaffGroupClick = (selectedItems) => {
 
-  const dispathFilter = (param, criteria, searchValue) => {
-    let searchParms = filterSearchSelections.filter((x) => x.name != param);
+  //   console.log("selectedItems", selectedItems);
+  //   setSelectedStaffGroups(selectedItems);
 
-    if (searchValue == "" || searchValue == null) {
-      dispatch(setFilterListSearchParams([...searchParms]));
-    } else {
-      if (param == "assignee") {
-        dispatch(
-          setFilterListSearchParams([
-            ...searchParms,
-
-            {
-              key: "assignee",
-              label: "Assignee",
-              operator: criteria,
-              type: "string",
-              value: searchValue,
-            },
-          ])
-        );
-      } else if (param == "staffgroup") {
-        dispatch(
-          setFilterListSearchParams([
-            {
-              key: "name",
-              label: "Staff Group",
-              operator: "like",
-              type: "string",
-              value: searchValue,
-            },
-          ])
-        );
-      } else if (param == "servedDate") {
-        dispatch(
-          setFilterListSearchParams([
-            ...searchParms,
-
-            {
-              key: "servedDate",
-              label: "Served Date",
-              name: param,
-              operator: "before",
-              type: "date",
-              value: searchValue,
-            },
-          ])
-        );
-      } else {
-        dispatch(
-          setFilterListSearchParams([
-            ...searchParms,
-
-            {
-              key: "processVariables",
-              label: param,
-              name: param,
-              operator: criteria,
-              type: "variables",
-              value: searchValue,
-            },
-          ])
-        );
-      }
-    }
-  };
+  // };
 
   const handleDeleteFilter = (index) => {
+    console.log(index);
     var filteredArr = [...filterSearchSelections];
 
-    filteredArr.splice(index, 1);
+    let selectedItem = { ...filteredArr[index] };
 
-    console.log(filteredArr);
+    if (selectedItem.key == "followUp") {
+      let list = filterList.filter((x) => x.key != "followUp");
+      setFilterList(list);
+      var newlist = filterSearchSelections.filter((x) => x.key != "followUp");
+      setNxtApperanceEndDate(null);
+      setNxtApperanceStartDate(null);
+      dispatch(setFilterListSearchParams(newlist));
+    } else if (selectedItem.key == "due") {
+      let list = filterList.filter((x) => x.key != "due");
+      setFilterList(list);
+      var newlist = filterSearchSelections.filter((x) => x.key != "due");
+      setStartDate(null);
+      setEndDate(null);
+      dispatch(setFilterListSearchParams(newlist));
+    } else {
+      if (selectedItem.key == "processVariables") {
+        let list = filterList.filter((x) => x.name != selectedItem.name);
+        setFilterList(list);
+      }
 
-    dispatch(setFilterListSearchParams(filteredArr));
+      filteredArr.splice(index, 1);
+
+      console.log(filteredArr);
+
+      dispatch(setFilterListSearchParams(filteredArr));
+    }
   };
 
   const handleClearFilter = () => {
@@ -312,87 +311,6 @@ const TaskFilter = React.memo(() => {
 
     dispatch(setFilterListSearchParams([]));
   };
-
-  const crimalStatusOptions = [
-    {
-      id: 0,
-      value: "",
-      name: "",
-    },
-    {
-      id: 1,
-      value: "Yes",
-      name: "Yes",
-    },
-    {
-      id: 2,
-      value: "No",
-      name: "No",
-    },
-  ];
-
-  const documentStatusOptions = [
-    {
-      id: 0,
-      value: "",
-      name: "",
-    },
-    {
-      id: 1,
-      value: "New",
-      name: "New",
-    },
-    {
-      id: 2,
-      value: "Inprogress",
-      name: "In Progress",
-    },
-    {
-      id: 3,
-      value: "Closed",
-      name: "Closed",
-    },
-  ];
-
-  const documentType = [
-    {
-      id: 0,
-      value: "",
-      name: "",
-    },
-    {
-      id: 1,
-      value: "noticeOfConstitutionalQuestionAndSupportingDocuments",
-      name: "Notice Of Constitutional Question And Supporting Documents",
-    },
-  ];
-
-  const staffGroup = [
-    {
-      id: 0,
-      value: "",
-      name: "Select",
-      isSelected: false,
-    },
-    {
-      id: 1,
-      value: "bcps",
-      name: "BCPS",
-      isSelected: true,
-    },
-    {
-      id: 2,
-      value: "lsb",
-      name: "LSB",
-      isSelected: false,
-    },
-    {
-      id: 3,
-      value: "joint",
-      name: "JOINT",
-      isSelected: false,
-    },
-  ];
 
   return (
     <div>
@@ -415,25 +333,26 @@ const TaskFilter = React.memo(() => {
           handleClick={applySearch}
           label="Edited by"
         ></TextSearch>
-        <span className="float-right showFilter" onClick={handleShowFilters}>
-          Show Filters <i className="fa fa-solid fa-filter pr-1"></i>
-        </span>
+        <TextSearch
+          placeholdertext="Lawyer Name"
+          searchRef={lawyerNameRef}
+          handleClick={applySearch}
+          label="Lawyer Name"
+        ></TextSearch>
       </div>
       <div>
-        {filterSearchSelections.map((x, index) => {
-          return (
-            <span className="text-muted">
-              {x.label} : {x.value}
-              <span
-                onClick={() => {
-                  handleDeleteFilter(index);
-                }}
-              >
-                <i className="fa fa-solid fa-close p-2"></i>
-              </span>
-            </span>
-          );
-        })}
+        <input
+          type="button"
+          className="btn button-view-edit"
+          value="Add Filter +"
+          onClick={handleShowFilters}
+        ></input>
+        {/* <span className="float-right showFilter" onClick={handleShowFilters}>
+          Add Filters <i className="fa fa-solid fa-filter pr-1"></i>
+        </span> */}
+      </div>
+      <div className="filterDiv">
+        <Filters handleDeleteFilter={handleDeleteFilter}></Filters>
       </div>
       <Modal show={showTaskFilters} onHide={handleShowFilters} keyboard={false}>
         <Modal.Header closeButton className="btn-primary modal-header-custom">
@@ -448,10 +367,10 @@ const TaskFilter = React.memo(() => {
                 options={staffGroup}
               ></DropdownFilter>
               {/* <CheckBoxDropDownFilter
-                label="Responsiblity"
-                options={staffGroup}
-                handleSelection={handleStaffGroupClick}
-              ></CheckBoxDropDownFilter> */}
+        label="Responsiblity"
+        options={staffGroup}
+        handleSelection={handleStaffGroupClick}
+      ></CheckBoxDropDownFilter> */}
             </div>
             <div className="col-6">
               <DropdownFilter
@@ -482,8 +401,8 @@ const TaskFilter = React.memo(() => {
               <div className="mx-2">
                 <b>Serve Date</b>
               </div>
-              <div class="row mx-1">
-                <div class="col-6">
+              <div className="row mx-1">
+                <div className="col-6">
                   <div>From:</div>
                   <DatePicker
                     className="form-control"
@@ -501,7 +420,7 @@ const TaskFilter = React.memo(() => {
                     dropdownMode="select"
                   />
                 </div>
-                <div class="col-6">
+                <div className="col-6">
                   <div>To:</div>
                   <DatePicker
                     className="form-control"
@@ -525,8 +444,8 @@ const TaskFilter = React.memo(() => {
               <div className="mx-2">
                 <b>Next Apperance Date</b>
               </div>
-              <div class="row mx-1">
-                <div class="col-6">
+              <div className="row mx-1">
+                <div className="col-6">
                   <div>From:</div>
                   <DatePicker
                     className="form-control"
@@ -536,24 +455,24 @@ const TaskFilter = React.memo(() => {
                       setNxtApperanceStartDate(date);
                     }}
                     selectsStart
-                    startDate={startDate}
-                    endDate={endDate}
+                    startDate={nxtApperanceStartDate}
+                    endDate={nxtApperanceEndDate}
                     peekNextMonth
                     showMonthDropdown
                     showYearDropdown
                     dropdownMode="select"
                   />
                 </div>
-                <div class="col-6">
+                <div className="col-6">
                   <div>To:</div>
                   <DatePicker
                     className="form-control"
                     selected={nxtApperanceEndDate}
                     onChange={(date) => setNxtApperanceEndDate(date)}
                     selectsEnd
-                    startDate={startDate}
-                    endDate={endDate}
-                    minDate={startDate}
+                    startDate={nxtApperanceStartDate}
+                    endDate={nxtApperanceEndDate}
+                    minDate={nxtApperanceStartDate}
                     peekNextMonth
                     showMonthDropdown
                     showYearDropdown
