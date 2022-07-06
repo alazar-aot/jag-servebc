@@ -4,20 +4,29 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchServiceTaskList } from "../../../apiManager/services/bpmTaskServices";
 import {
   setBPMTaskListActivePage,
-  setBPMTaskLoader,
+  setBPMTaskLoader
 } from "../../../actions/bpmTaskActions";
 import Loading from "../../../containers/Loading";
 import Pagination from "react-js-pagination";
 import { push } from "connected-react-router";
-import { getFirstResultIndex } from "../../../apiManager/services/taskSearchParamsFormatterService";
 // Import Table Components
 import TaskTable from "./TaskTable";
 import { MAX_RESULTS, TABLE_HEADERS } from "../constants/taskConstants";
+import DropdownButton from 'react-bootstrap/DropdownButton'
+import Dropdown from 'react-bootstrap/Dropdown'
 
 const ServiceFlowTaskList = React.memo(
   ({ showApplicationSetter: showTaskDetailsSetter }) => {
     const taskList = useSelector((state) => state.bpmTasks.tasksList);
     const tasksCount = useSelector((state) => state.bpmTasks.tasksCount);
+
+    const dispatch = useDispatch();
+    const bpmTaskId = useSelector((state) => state.bpmTasks.taskId);
+    const isTaskListLoading = useSelector((state) => state.bpmTasks.isTaskListLoading);
+    const reqData = useSelector((state) => state.bpmTasks.listReqParams);
+    const selectedFilter = useSelector((state) => state.bpmTasks.selectedFilter);
+    const activePage = useSelector((state) => state.bpmTasks.activePage);
+    const [tasksPerPage, setTasksPerPage] = React.useState(MAX_RESULTS);
 
     // Toggle the showApplication variable on the View/Edit button click
     const [showTaskDetails, setShowTaskDetails] = React.useState(false);
@@ -28,7 +37,6 @@ const ServiceFlowTaskList = React.memo(
     // Only render tasks that are related to the Serve Legal Documents Form
     // Otherwise, the application crashes if a different form has been submitted
     const [taskServeLegalDocs, setTaskServeLegalDocs] = React.useState([]);
-
 
     useEffect(() => {
       // filter task list for Serve Legal Document related tasks
@@ -55,13 +63,6 @@ const ServiceFlowTaskList = React.memo(
       setTaskServeLegalDocs(filteredTasks);
     }, [taskList]);
 
-    const dispatch = useDispatch();
-    const bpmTaskId = useSelector((state) => state.bpmTasks.taskId);
-    const isTaskListLoading = useSelector((state) => state.bpmTasks.isTaskListLoading);
-    const reqData = useSelector((state) => state.bpmTasks.listReqParams);
-    const selectedFilter = useSelector((state) => state.bpmTasks.selectedFilter);
-    const activePage = useSelector((state) => state.bpmTasks.activePage);
-    const tasksPerPage = MAX_RESULTS;
 
     useEffect(() => {
       if (selectedFilter) {
@@ -78,12 +79,14 @@ const ServiceFlowTaskList = React.memo(
     };
 
     const handlePageChange = (pageNumber) => {
+
       dispatch(setBPMTaskListActivePage(pageNumber));
       dispatch(setBPMTaskLoader(true));
-      let firstResultIndex = getFirstResultIndex(pageNumber);
+      let firstResultIndex = pageNumber * tasksPerPage - tasksPerPage;
       dispatch(
-        fetchServiceTaskList(selectedFilter.id, firstResultIndex, reqData)
+        fetchServiceTaskList(selectedFilter.id, firstResultIndex, reqData, null, tasksPerPage)
       );
+
     };
 
     function timeFormatter(cell) {
@@ -104,6 +107,75 @@ const ServiceFlowTaskList = React.memo(
       setShowTaskDetails(true);
     };
 
+    const CustomTotal = () => {
+
+      let from = (activePage * tasksPerPage - tasksPerPage) + 1;
+      let to = (activePage * tasksPerPage);
+      let size = tasksCount - 1
+
+      if (to > size){ to = size};
+
+      return (
+        <span className="react-bootstrap-table-pagination-total">
+          Showing {from}-{to} of {size}
+        </span>
+      );
+    };
+
+    const changeTasksPerPage = (numTasksPerPage) => {
+      setTasksPerPage(numTasksPerPage);
+      dispatch(setBPMTaskListActivePage(1)); // go back to first page
+      dispatch(setBPMTaskLoader(true));
+      let firstResultIndex = 1 * numTasksPerPage - numTasksPerPage;
+      dispatch(
+        fetchServiceTaskList(selectedFilter.id, firstResultIndex, reqData, null, numTasksPerPage)
+      );
+    }
+
+
+    const CustomDropUp = ()=>{
+      return <span>
+        showing{"   "}
+        <DropdownButton 
+          drop="up"
+          variant="secondary"
+          title={tasksPerPage}
+          style={{display:'inline'}}
+        >
+        {
+          getpageList().map(option => (
+            <Dropdown.Item 
+              key={ option.text }
+              type="button"
+              onClick={ () => changeTasksPerPage(option.value) }
+            >
+              { option.text }
+              </Dropdown.Item>
+          ))
+        }
+        </DropdownButton>
+        per page
+      </span>
+    }
+
+    const getpageList = ()=>{
+  
+      const list = [ 
+            {
+            text: '15', value: 15
+          },
+            {
+            text: '30', value: 30
+          },
+            {
+            text: '60', value: 60
+          },
+            {
+            text: '90', value: 90
+          } ]
+      return list
+    }
+
     const renderTaskTable = () => {
       if ((tasksCount || taskList.length) && selectedFilter) {
         return (
@@ -116,6 +188,7 @@ const ServiceFlowTaskList = React.memo(
             />
 
             <div className="pagination-wrapper">
+              <CustomTotal/>
               <Pagination
                 activePage={activePage}
                 itemsCountPerPage={tasksPerPage}
@@ -125,6 +198,7 @@ const ServiceFlowTaskList = React.memo(
                 prevPageText="Previous"
                 nextPageText="Next"
               />
+              <CustomDropUp/>
             </div>
           </>
         );

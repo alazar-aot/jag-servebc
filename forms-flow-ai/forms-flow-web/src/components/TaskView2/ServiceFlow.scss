@@ -419,7 +419,11 @@ span[dat-title]:hover:after,.ml-1[dat-title]:hover:after,.tooltips[dat-title]:ho
 
 .pagination-wrapper {
   margin: auto;
-  width: 50%;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  width: 95%;
+  display: flex;
+  justify-content: space-between;
 
   .pagination {
     li {
