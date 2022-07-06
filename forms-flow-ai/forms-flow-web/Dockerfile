@@ -16,11 +16,11 @@ RUN apk update && apk upgrade && \
 # expect a build-time variable
 ARG FORMFLOW_SOURCE_REPO_BRANCH
 # use the value to set the ENV var default
-ENV FORMFLOW_SOURCE_REPO_BRANCH ${FORMFLOW_SOURCE_REPO_BRANCH}
+ENV FORMFLOW_SOURCE_REPO_BRANCH v4.0.5-alpha
 # expect a build-time variable
 ARG FORMFLOW_SOURCE_REPO_URL
 # use the value to set the ENV var default
-ENV FORMFLOW_SOURCE_REPO_URL ${FORMFLOW_SOURCE_REPO_URL}
+ENV FORMFLOW_SOURCE_REPO_URL https://github.com/AOT-Technologies/forms-flow-ai
 
 ARG NODE_ENV
 ARG GENERATE_SOURCEMAP
@@ -81,14 +81,18 @@ ARG CUSTOM_PUBLIC_DIR=public
 COPY ./  /tmp/${CUSTOM_PUBLIC_DIR}/
 RUN cp -R /tmp/${CUSTOM_PUBLIC_DIR}/* /web/ && rm -Rf /tmp/${CUSTOM_PUBLIC_DIR}/
 
+COPY package.json ./
+COPY package-lock.json ./
+
 # Build app
 RUN npm install
-RUN npm run build
+EXPOSE 3000
+CMD ["npm","start"]
 
 #FROM docker-remote.artifacts.developer.gov.bc.ca/nginx:1.17 as production-stage
-FROM nginx:1.17 as production-stage
-RUN mkdir /nginx
-COPY --from=build-stage /web/build /usr/share/nginx/html
-COPY --from=build-stage /web/nginx.conf /etc/nginx/nginx.conf
-EXPOSE 8080:8080
-CMD ["nginx", "-g", "daemon off;"]
+# FROM nginx:1.17 as production-stage
+# RUN mkdir /nginx
+# COPY --from=build-stage /web/build /usr/share/nginx/html
+# COPY --from=build-stage /web/nginx.conf /etc/nginx/nginx.conf
+# EXPOSE 8080:8080
+# CMD ["nginx", "-g", "daemon off;"]

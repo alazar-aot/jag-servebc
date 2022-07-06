@@ -28,6 +28,7 @@ import { Route, Redirect } from "react-router-dom";
 import { push } from "connected-react-router";
 
 import TaskFilter from "./TaskFilter";
+import { jsPDF } from "jspdf";
 
 export default React.memo(() => {
   const dispatch = useDispatch();
@@ -108,6 +109,8 @@ export default React.memo(() => {
   const checkIfTaskIDExistsInList = (list, id) => {
     return list.some((task) => task.id === id);
   };
+
+  
   const SocketIOCallback = useCallback(
     (refreshedTaskId, forceReload, isUpdateEvent) => {
       if (forceReload) {
@@ -190,11 +193,97 @@ export default React.memo(() => {
     setShowTaskDetails(false);
   };
 
+  const handlePrintTablePDF = () => {
+    // const doc = new jsPDF('p', 'pt', [window.innerHeight, window.innerWidth]);
+    // const doc = new jsPDF('p', 'pt', [2000, 1520]);
+    // [2000, 1700] works well on ultra-wide, [2000, 1520] works on laptop
+
+    // doc.canvas.height = elementToPrint.clientHeight;
+    // doc.canvas.height = elementToPrint.clientWidth;
+
+    // const doc = new jsPDF('p', 'pt', 'a4');
+
+    // var margins = {
+    //   top: 10,
+    //   bottom: 10,
+    //   left: 10,
+    //   width: 595
+    // };
+
+    // doc.html(
+    //   elementToPrint,
+    //   margins.left,
+    //   margins.top, {
+    //     'width': margins.width
+    //   },
+
+    //   function(dispose) {
+    //     doc.save("Serve Legal Tasks.pdf");
+    //   }, margins);
+
+
+
+
+    const elementToPrint = document.getElementById("main");
+
+    const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
+
+    doc.html(elementToPrint, {
+      callback: function(doc) {
+        doc.save("Serve Legal.pdf"); 
+      }
+    })
+
+  }
+
+  const handlePrintFormPDF = () => {
+    const elementToPrint = document.getElementsByClassName("container")[0];
+
+    const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
+
+    doc.html(elementToPrint, {
+      callback: function(doc) {
+        doc.save("Serve Legal.pdf"); 
+      }
+    })
+
+  }
+
+  const handlePrintFormPDFWithoutNotes = () => {
+
+    // Find and remove the Note section of the form
+    const noteElement = document.getElementById("ez2i9rr");
+    noteElement.remove();
+
+    // Get and print the remaining elements
+    const elementToPrint = document.getElementsByClassName("container")[0];
+
+    const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
+
+    doc.html(elementToPrint, {
+      callback: function(doc) {
+        doc.save("Serve Legal.pdf"); 
+      }
+    })
+
+  }
+
+  // const handlePrintButton = () => {
+  //   document.getElementById("dropdownBtn").classList.toggle("show");
+  // }
+
   return (
     <Container fluid id="main">
       {!showTaskDetails ? (
         <section>
           <TaskFilter />
+          {/* <PDFGenerator dataToRender={"test"} /> */}
+          <input
+            type="button"
+            className="btn print-pdf-button"
+            value="Print to PDF"
+            onClick={handlePrintTablePDF}
+            ></input>
           <ServiceFlowTaskList showApplicationSetter={wrapperSetShowTaskDetails}/>
         </section>
       ) : (
@@ -215,9 +304,23 @@ export default React.memo(() => {
               </span>
             </a>
           </div>
+          <div>
+            <input
+              type="button"
+              className="btn print-pdf-button"
+              value="Print With Notes"
+              onClick={handlePrintFormPDF}
+            ></input>
+            <input
+              type="button"
+              className="btn print-pdf-button"
+              value="Print Without Notes"
+              onClick={handlePrintFormPDFWithoutNotes}
+            ></input>
+          </div>
           <Container fluid id="main">
             <Route path={"/task_new2/:taskId?"}>
-              <ServiceFlowTaskDetails />
+              <ServiceFlowTaskDetails id="main" />
             </Route>
             <Route path={"/task_new2/:taskId/:notAvailable"}>
               {" "}
