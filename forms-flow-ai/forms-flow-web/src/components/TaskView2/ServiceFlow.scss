@@ -451,12 +451,23 @@ span[dat-title]:hover:after,.ml-1[dat-title]:hover:after,.tooltips[dat-title]:ho
 .custom-th
 {
   padding: 15px;
-  text-align: center;
+  text-align: left;
 }
 
 // TaskTable View Styling
 table tr:nth-child(odd) td{
   background-color: lightgray;
+}
+
+td
+{
+  padding-left: 15px;
+  text-align: left;
+  max-width: 175px;
+}
+
+table{
+  width: 100%;
 }
 
 
