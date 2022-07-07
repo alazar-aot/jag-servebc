@@ -39,7 +39,7 @@ const ServiceFlowTaskList = React.memo(
       if (selectedFilter) {
         dispatch(setBPMTaskLoader(true));
         dispatch(setBPMTaskListActivePage(1));
-        dispatch(fetchServiceTaskList(selectedFilter.id, 0, reqData));
+        dispatch(fetchServiceTaskList(selectedFilter.id, 0, reqData, null, tasksPerPage));
       }
     }, [dispatch, selectedFilter, reqData]);
 
