@@ -34,73 +34,6 @@ const ServiceFlowTaskList = React.memo(
       showTaskDetailsSetter(showTaskDetails);
     }, [showTaskDetailsSetter, showTaskDetails]);
 
-    // Only render tasks that are related to the Serve Legal Documents Form
-    // Otherwise, the application crashes if a different form has been submitted
-    const [taskServeLegalDocs, setTaskServeLegalDocs] = React.useState([]);
-    const [taskServeLegalDocsCount, setTaskServeLegalDocsCount] = React.useState(tasksCount);
-
-    useEffect(() => {
-      // filter task list for Serve Legal Document related tasks
-      let filteredTasks = taskList.filter((t) => {
-        // filter through all task variables
-        let taskVariableList = t._embedded.variable.filter((v) => {
-          return (
-            v.name === "documentStatus" ||
-            v.name === "partyName" ||
-            v.name === "isCriminal" ||
-            v.name === "nextAppearanceDate" ||
-            v.name === "staffGroup" ||
-            v.name === "courtOrTribunalFileNbr" ||
-            v.name === "servedDate" ||
-            v.name === "staffGroup" ||
-            v.name === "serveDateInISOFormat" || 
-            v.name === "lawyerName" ||
-            v.name === "registry" ||
-            v.name === "documentType"
-          );
-        });
-        // if any of the above task variables are included in the task then consider it a 'Serve Legal Doc' task
-        return taskVariableList.length > 0;
-      });
-      setTaskServeLegalDocs(filteredTasks);
-    }, [taskList]);
-
-    // update the taskServeLegalDocsCount on first render
-    useEffect(() => {
-      updateServeLegalDocsCount();
-    }, [])
-
-    // TODO: refactor to make DRY
-    const updateServeLegalDocsCount = () => {
-      let otherCount = 0;
-      // filter task list for Serve Legal Document related tasks
-      taskList.forEach((t) => {
-        // filter through all task variables
-        let taskVariableList = t._embedded.variable.filter((v) => {
-          return (
-            v.name === "documentStatus" ||
-            v.name === "partyName" ||
-            v.name === "isCriminal" ||
-            v.name === "nextAppearanceDate" ||
-            v.name === "staffGroup" ||
-            v.name === "courtOrTribunalFileNbr" ||
-            v.name === "servedDate" ||
-            v.name === "staffGroup" ||
-            v.name === "serveDateInISOFormat" || 
-            v.name === "lawyerName" ||
-            v.name === "registry" ||
-            v.name === "documentType"
-          );
-        });
-        // if any of the above task variables are included in the task then consider it a 'Serve Legal Doc' task
-        if (taskVariableList.length > 0) {return true;}
-        // if the task is not a 'Serve Legal Doc' task, then decrement the total task count
-        else { otherCount++ }
-      });
-      setTaskServeLegalDocsCount(tasksCount - otherCount);
-      return tasksCount - otherCount;
-    }
-
     useEffect(() => {
       if (selectedFilter) {
         dispatch(setBPMTaskLoader(true));
@@ -148,7 +81,7 @@ const ServiceFlowTaskList = React.memo(
 
       let from = (activePage * tasksPerPage - tasksPerPage) + 1;
       let to = (activePage * tasksPerPage);
-      let size = taskServeLegalDocsCount;
+      let size = tasksCount;
 
       if (to > size){ to = size};
 
@@ -163,7 +96,7 @@ const ServiceFlowTaskList = React.memo(
       setTasksPerPage(numTasksPerPage);
       dispatch(setBPMTaskListActivePage(1)); // go back to first page
       dispatch(setBPMTaskLoader(true));
-      let firstResultIndex = 1 * numTasksPerPage - numTasksPerPage;
+      let firstResultIndex = 1 * tasksPerPage - tasksPerPage;
       dispatch(
         fetchServiceTaskList(selectedFilter.id, firstResultIndex, reqData, null, numTasksPerPage)
       );
@@ -214,12 +147,12 @@ const ServiceFlowTaskList = React.memo(
     }
 
     const renderTaskTable = () => {
-      if ((taskServeLegalDocsCount || taskServeLegalDocs.length) && selectedFilter) {
+      if ((tasksCount || taskList.length) && selectedFilter) {
         return (
           <>
             <TaskTable 
               tableHeaders={TABLE_HEADERS} 
-              taskServeLegalDocs={taskServeLegalDocs}
+              taskServeLegalDocs={taskList}
               timeFormatter={timeFormatter}
               onViewEditChanged={onViewEditChanged} 
             />
@@ -229,7 +162,7 @@ const ServiceFlowTaskList = React.memo(
               <Pagination
                 activePage={activePage}
                 itemsCountPerPage={tasksPerPage}
-                totalItemsCount={taskServeLegalDocsCount}
+                totalItemsCount={tasksCount}
                 pageRangeDisplayed={3}
                 onChange={handlePageChange}
                 prevPageText="Previous"

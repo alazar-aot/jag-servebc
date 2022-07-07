@@ -12,6 +12,11 @@ const Filters = (props) => {
   }, [filterSearchSelections]);
 
   const filters = filterSearchSelections.map((x, index) => {
+
+    if (x.key === 'processDefinitionName'){
+      return false;
+    }
+
     return (
       <span key={index} className="filters m-1 p-1">
         {x.label} : {x.value}
