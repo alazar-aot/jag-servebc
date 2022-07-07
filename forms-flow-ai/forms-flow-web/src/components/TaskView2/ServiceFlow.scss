@@ -480,6 +480,9 @@ table tr:nth-child(odd) td{
   margin: 30px;
 }
 
+
+// BEGIN Styling for Print to PDF Functionality 
+
 .print-pdf-button{
   background-color: #003366 !important;
   color: white;
@@ -487,6 +490,39 @@ table tr:nth-child(odd) td{
   // right: 0px;
   float:right;
   // margin-top: -55px;
-  margin-top: -4%;
+  margin-top: -3%;
   margin-right: 1%;
 }
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  // position: absolute;
+  float:right;
+  background-color: #f1f1f1;
+  // min-width: 160px;
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content input {
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.btn:hover, .dropdown:hover .btn  {
+  background-color: #0b7dda;
+}
+
+// END Styling for Print to PDF Functionality 

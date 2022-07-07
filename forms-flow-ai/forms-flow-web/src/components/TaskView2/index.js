@@ -194,62 +194,38 @@ export default React.memo(() => {
   };
 
   const handlePrintTablePDF = () => {
-    // const doc = new jsPDF('p', 'pt', [window.innerHeight, window.innerWidth]);
-    // const doc = new jsPDF('p', 'pt', [2000, 1520]);
-    // [2000, 1700] works well on ultra-wide, [2000, 1520] works on laptop
-
-    // doc.canvas.height = elementToPrint.clientHeight;
-    // doc.canvas.height = elementToPrint.clientWidth;
-
-    // const doc = new jsPDF('p', 'pt', 'a4');
-
-    // var margins = {
-    //   top: 10,
-    //   bottom: 10,
-    //   left: 10,
-    //   width: 595
-    // };
-
-    // doc.html(
-    //   elementToPrint,
-    //   margins.left,
-    //   margins.top, {
-    //     'width': margins.width
-    //   },
-
-    //   function(dispose) {
-    //     doc.save("Serve Legal Tasks.pdf");
-    //   }, margins);
-
-
-
 
     const elementToPrint = document.getElementById("main");
+    // const elementToPrint = document.getElementsByClassName("container-fluid")[1];
 
     const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
+
+    // Use The Font-Awesome Fonts, So Symbols Render Correctly
+    doc.setFont('fa-solid-900', 'normal');
 
     doc.html(elementToPrint, {
       callback: function(doc) {
         doc.save("Serve Legal.pdf"); 
       }
     })
-
   }
 
-  const handlePrintFormPDF = () => {
+  const handlePrintFormWithNotes = () => {
     const elementToPrint = document.getElementsByClassName("container")[0];
 
     const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
 
+    // Use The Font-Awesome Fonts, So Symbols Render Correctly
+    doc.setFont('fa-regular-400', 'normal');
+
     doc.html(elementToPrint, {
       callback: function(doc) {
         doc.save("Serve Legal.pdf"); 
       }
     })
-
   }
 
-  const handlePrintFormPDFWithoutNotes = () => {
+  const handlePrintFormWithoutNotes = () => {
 
     // Find and remove the Note section of the form
     const noteElement = document.getElementById("ez2i9rr");
@@ -260,17 +236,19 @@ export default React.memo(() => {
 
     const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
 
+    // Use The Font-Awesome Fonts, So Symbols Render Correctly
+    doc.setFont('fa-regular-400', 'normal');
+
     doc.html(elementToPrint, {
       callback: function(doc) {
         doc.save("Serve Legal.pdf"); 
+        // Re-add the removed element to the DOM, now that the PDF has been generated
+        elementToPrint.appendChild(noteElement);
       }
     })
 
-  }
 
-  // const handlePrintButton = () => {
-  //   document.getElementById("dropdownBtn").classList.toggle("show");
-  // }
+  }
 
   return (
     <Container fluid id="main">
@@ -304,19 +282,25 @@ export default React.memo(() => {
               </span>
             </a>
           </div>
-          <div>
-            <input
-              type="button"
-              className="btn print-pdf-button"
-              value="Print With Notes"
-              onClick={handlePrintFormPDF}
-            ></input>
-            <input
-              type="button"
-              className="btn print-pdf-button"
-              value="Print Without Notes"
-              onClick={handlePrintFormPDFWithoutNotes}
-            ></input>
+          <div className="dropdown">
+            <button className="btn print-pdf-button">
+              <span>Print PDF </span>
+              <i className="fa fa-caret-down"></i>
+            </button>
+            <div className="dropdown-content">
+              <input
+                type="button"
+                className="btn print-pdf-button"
+                value="Print With Notes"
+                onClick={handlePrintFormWithNotes}
+              ></input>
+              <input
+                type="button"
+                className="btn print-pdf-button"
+                value="Print Without Notes"
+                onClick={handlePrintFormWithoutNotes}
+              ></input>
+            </div>
           </div>
           <Container fluid id="main">
             <Route path={"/task_new2/:taskId?"}>
