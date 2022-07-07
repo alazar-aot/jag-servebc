@@ -30,6 +30,8 @@ import { push } from "connected-react-router";
 import TaskFilter from "./TaskFilter";
 import { jsPDF } from "jspdf";
 
+ 
+
 export default React.memo(() => {
   const dispatch = useDispatch();
   const filterList = useSelector((state) => state.bpmTasks.filterList);
@@ -59,6 +61,7 @@ export default React.memo(() => {
   const reqDataRef = useRef(reqData);
   const firstResultsRef = useRef(firstResult);
   const taskListRef = useRef(taskList);
+
 
   // Toggle the showApplication variable on the View/Edit button click
   const [showTaskDetails, setShowTaskDetails] = React.useState(false);
@@ -197,11 +200,14 @@ export default React.memo(() => {
 
     const elementToPrint = document.getElementById("main");
 
-    // const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
-    const doc = new jsPDF('p', 'pt', [1700, 1600]);
+    // console.log(window.outerHeight);
+    // console.log(window.outerWidth);
+
+    const doc = new jsPDF('p', 'pt', [elementToPrint.clientWidth * 1.5 + 30, elementToPrint.clientWidth + 30]);
+    // const doc = new jsPDF('p', 'pt', [1700, 1600]);
 
     // Use The Font-Awesome Fonts, So Symbols Render Correctly
-    doc.setFont('fa-solid-900', 'normal');
+    // doc.setFont('fa-solid-900', 'normal');
 
     doc.html(elementToPrint, {
       callback: function(doc) {
@@ -214,19 +220,33 @@ export default React.memo(() => {
 
     const elementToPrint = document.getElementsByClassName("container")[0];
 
-    if (elementToPrint !== undefined) {
+
+
+    if (true) {
+
+
       const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
+      console.log(doc.internal.pageSize.getWidth());
+      console.log('Elements Equal');
+      
+
+
+
+      // console.log(elementToPrint == '<div class="container row task-container">');
+      
 
       // console.log('FONT LIST: ', doc.getFontList());
   
       // Use The Font-Awesome Fonts, So Symbols Render Correctly
-      doc.setFont('fa-regular-400', 'normal');
+      // doc.setFont('fa-regular-400', 'normal');
   
-      doc.html(elementToPrint, {
-        callback: function(doc) {
-          doc.save("Serve Legal.pdf"); 
-        }
-      })
+      // doc.html(elementToPrint, {
+      //   callback: function(doc) {
+      //     doc.save("Serve Legal.pdf"); 
+      //   }
+      // })
+    } else {
+      console.log('\nELEMENT TO PRINT IS UNDEFINED\n');
     }
   }
 
@@ -246,7 +266,7 @@ export default React.memo(() => {
       const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
 
       // Use The Font-Awesome Fonts, So Symbols Render Correctly
-      doc.setFont('fa-regular-400', 'normal');
+      // doc.setFont('fa-regular-400', 'normal');
   
       doc.html(elementToPrint, {
         callback: function(doc) {
@@ -290,13 +310,24 @@ export default React.memo(() => {
               </span>
             </a>
           </div>
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Dropdown button
+          <div className="dropdown">
+            <button className="btn print-pdf-button">
+              <span>Print PDF </span>
+              <i className="fa fa-caret-down"></i>
             </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#" onClick={handlePrintFormWithNotes}>With Notes</a>
-              <a class="dropdown-item" href="#" onClick={handlePrintFormWithoutNotes}>Without Notes</a>
+            <div className="dropdown-content">
+              <input
+                type="button"
+                className="btn print-pdf-button"
+                value="Print With Notes"
+                onClick={handlePrintFormWithNotes}
+              ></input>
+              <input
+                type="button"
+                className="btn print-pdf-button"
+                value="Print Without Notes"
+                onClick={handlePrintFormWithoutNotes}
+              ></input>
             </div>
           </div>
           <Container fluid id="main">
