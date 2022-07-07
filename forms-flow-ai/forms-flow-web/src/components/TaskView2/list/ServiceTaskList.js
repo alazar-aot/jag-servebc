@@ -14,6 +14,7 @@ import TaskTable from "./TaskTable";
 import { MAX_RESULTS, TABLE_HEADERS } from "../constants/taskConstants";
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import Dropdown from 'react-bootstrap/Dropdown'
+import {timeFormatter} from "../helper/helper";
 
 const ServiceFlowTaskList = React.memo(
   ({ showApplicationSetter: showTaskDetailsSetter }) => {
@@ -58,18 +59,6 @@ const ServiceFlowTaskList = React.memo(
       );
 
     };
-
-    function timeFormatter(cell) {
-      
-      if (cell == null || cell == "" || cell == undefined) {return " ";}
-      const date = new Date(cell);
-      const year = date.getFullYear();
-      const month = date.toLocaleString("en-US", { month: "short" });
-      const day = ("0" + date.getDate()).slice(-2);
-      const localdate = year + "/" + month.toUpperCase() + "/" + day;
-
-      return <label title={cell}>{localdate}</label>;
-    }
 
     // Show Task details in a new view
     const onViewEditChanged = (row) => {

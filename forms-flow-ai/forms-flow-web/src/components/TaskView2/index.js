@@ -196,9 +196,9 @@ export default React.memo(() => {
   const handlePrintTablePDF = () => {
 
     const elementToPrint = document.getElementById("main");
-    // const elementToPrint = document.getElementsByClassName("container-fluid")[1];
 
-    const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
+    // const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
+    const doc = new jsPDF('p', 'pt', [1700, 1600]);
 
     // Use The Font-Awesome Fonts, So Symbols Render Correctly
     doc.setFont('fa-solid-900', 'normal');
@@ -211,43 +211,51 @@ export default React.memo(() => {
   }
 
   const handlePrintFormWithNotes = () => {
+
     const elementToPrint = document.getElementsByClassName("container")[0];
 
-    const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
+    if (elementToPrint !== undefined) {
+      const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
 
-    // Use The Font-Awesome Fonts, So Symbols Render Correctly
-    doc.setFont('fa-regular-400', 'normal');
-
-    doc.html(elementToPrint, {
-      callback: function(doc) {
-        doc.save("Serve Legal.pdf"); 
-      }
-    })
+      // console.log('FONT LIST: ', doc.getFontList());
+  
+      // Use The Font-Awesome Fonts, So Symbols Render Correctly
+      doc.setFont('fa-regular-400', 'normal');
+  
+      doc.html(elementToPrint, {
+        callback: function(doc) {
+          doc.save("Serve Legal.pdf"); 
+        }
+      })
+    }
   }
 
   const handlePrintFormWithoutNotes = () => {
 
     // Find and remove the Note section of the form
     const noteElement = document.getElementById("ez2i9rr");
-    noteElement.remove();
+    if(noteElement !== undefined){
+      noteElement.remove();
+    }
+
 
     // Get and print the remaining elements
     const elementToPrint = document.getElementsByClassName("container")[0];
 
-    const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
+    if (elementToPrint !== undefined){
+      const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
 
-    // Use The Font-Awesome Fonts, So Symbols Render Correctly
-    doc.setFont('fa-regular-400', 'normal');
-
-    doc.html(elementToPrint, {
-      callback: function(doc) {
-        doc.save("Serve Legal.pdf"); 
-        // Re-add the removed element to the DOM, now that the PDF has been generated
-        elementToPrint.appendChild(noteElement);
-      }
-    })
-
-
+      // Use The Font-Awesome Fonts, So Symbols Render Correctly
+      doc.setFont('fa-regular-400', 'normal');
+  
+      doc.html(elementToPrint, {
+        callback: function(doc) {
+          doc.save("Serve Legal.pdf"); 
+          // Re-add the removed element to the DOM, now that the PDF has been generated
+          elementToPrint.appendChild(noteElement);
+        }
+      })
+    }
   }
 
   return (
@@ -282,24 +290,13 @@ export default React.memo(() => {
               </span>
             </a>
           </div>
-          <div className="dropdown">
-            <button className="btn print-pdf-button">
-              <span>Print PDF </span>
-              <i className="fa fa-caret-down"></i>
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Dropdown button
             </button>
-            <div className="dropdown-content">
-              <input
-                type="button"
-                className="btn print-pdf-button"
-                value="Print With Notes"
-                onClick={handlePrintFormWithNotes}
-              ></input>
-              <input
-                type="button"
-                className="btn print-pdf-button"
-                value="Print Without Notes"
-                onClick={handlePrintFormWithoutNotes}
-              ></input>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item" href="#" onClick={handlePrintFormWithNotes}>With Notes</a>
+              <a class="dropdown-item" href="#" onClick={handlePrintFormWithoutNotes}>Without Notes</a>
             </div>
           </div>
           <Container fluid id="main">

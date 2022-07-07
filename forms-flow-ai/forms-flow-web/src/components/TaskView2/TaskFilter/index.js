@@ -66,7 +66,7 @@ const TaskFilter = React.memo(() => {
   }, []);
 
   useEffect(() => {
-    console.log("filterSearchSelections", filterSearchSelections);
+    // console.log("filterSearchSelections", filterSearchSelections);
   }, [filterSearchSelections]);
 
   const handleShowFilters = () => {
@@ -265,7 +265,7 @@ const TaskFilter = React.memo(() => {
 
     setSearchList(newSearchArray);
 
-    console.log("Updated Search Array", newSearchArray);
+    // console.log("Updated Search Array", newSearchArray);
   };
 
   // const handleStaffGroupClick = (selectedItems) => {
@@ -276,7 +276,7 @@ const TaskFilter = React.memo(() => {
   // };
 
   const handleDeleteFilter = (index) => {
-    console.log(index);
+    // console.log(index);
     var filteredArr = [...filterSearchSelections];
 
     let selectedItem = { ...filteredArr[index] };
@@ -303,7 +303,7 @@ const TaskFilter = React.memo(() => {
 
       filteredArr.splice(index, 1);
 
-      console.log(filteredArr);
+      // console.log(filteredArr);
 
       dispatch(setFilterListSearchParams(filteredArr));
     }

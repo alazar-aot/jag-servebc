@@ -5,7 +5,7 @@ const CheckBoxDropDownFilter = (props) => {
   const [selectedItems, setSelectedItems] = useState([]);
 
   const handleCheckBoxChange = (e) => {
-    console.log(e);
+    // console.log(e);
     let items = [...selectedItems];
     let selectedValue = e.target.value;
     let isChecked = e.target.checked;
@@ -15,7 +15,7 @@ const CheckBoxDropDownFilter = (props) => {
       items.splice(items.indexOf(selectedValue), 1);
     }
 
-    console.log("items", items);
+    // console.log("items", items);
     setSelectedItems(items);
   };
 
