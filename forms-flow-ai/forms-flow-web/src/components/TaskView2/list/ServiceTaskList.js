@@ -37,6 +37,7 @@ const ServiceFlowTaskList = React.memo(
     // Only render tasks that are related to the Serve Legal Documents Form
     // Otherwise, the application crashes if a different form has been submitted
     const [taskServeLegalDocs, setTaskServeLegalDocs] = React.useState([]);
+    const [taskServeLegalDocsCount, setTaskServeLegalDocsCount] = React.useState(tasksCount);
 
     useEffect(() => {
       // filter task list for Serve Legal Document related tasks
@@ -58,11 +59,47 @@ const ServiceFlowTaskList = React.memo(
             v.name === "documentType"
           );
         });
+        // if any of the above task variables are included in the task then consider it a 'Serve Legal Doc' task
         return taskVariableList.length > 0;
       });
       setTaskServeLegalDocs(filteredTasks);
     }, [taskList]);
 
+    // update the taskServeLegalDocsCount on first render
+    useEffect(() => {
+      updateServeLegalDocsCount();
+    }, [])
+
+    // TODO: refactor to make DRY
+    const updateServeLegalDocsCount = () => {
+      let otherCount = 0;
+      // filter task list for Serve Legal Document related tasks
+      taskList.forEach((t) => {
+        // filter through all task variables
+        let taskVariableList = t._embedded.variable.filter((v) => {
+          return (
+            v.name === "documentStatus" ||
+            v.name === "partyName" ||
+            v.name === "isCriminal" ||
+            v.name === "nextAppearanceDate" ||
+            v.name === "staffGroup" ||
+            v.name === "courtOrTribunalFileNbr" ||
+            v.name === "servedDate" ||
+            v.name === "staffGroup" ||
+            v.name === "serveDateInISOFormat" || 
+            v.name === "lawyerName" ||
+            v.name === "registry" ||
+            v.name === "documentType"
+          );
+        });
+        // if any of the above task variables are included in the task then consider it a 'Serve Legal Doc' task
+        if (taskVariableList.length > 0) {return true;}
+        // if the task is not a 'Serve Legal Doc' task, then decrement the total task count
+        else { otherCount++ }
+      });
+      setTaskServeLegalDocsCount(tasksCount - otherCount);
+      return tasksCount - otherCount;
+    }
 
     useEffect(() => {
       if (selectedFilter) {
@@ -111,7 +148,7 @@ const ServiceFlowTaskList = React.memo(
 
       let from = (activePage * tasksPerPage - tasksPerPage) + 1;
       let to = (activePage * tasksPerPage);
-      let size = tasksCount - 1
+      let size = taskServeLegalDocsCount;
 
       if (to > size){ to = size};
 
@@ -177,7 +214,7 @@ const ServiceFlowTaskList = React.memo(
     }
 
     const renderTaskTable = () => {
-      if ((tasksCount || taskList.length) && selectedFilter) {
+      if ((taskServeLegalDocsCount || taskServeLegalDocs.length) && selectedFilter) {
         return (
           <>
             <TaskTable 
@@ -192,7 +229,7 @@ const ServiceFlowTaskList = React.memo(
               <Pagination
                 activePage={activePage}
                 itemsCountPerPage={tasksPerPage}
-                totalItemsCount={tasksCount}
+                totalItemsCount={taskServeLegalDocsCount}
                 pageRangeDisplayed={3}
                 onChange={handlePageChange}
                 prevPageText="Previous"
