@@ -124,31 +124,31 @@ export const ALL_TASKS="All tasks"
 export const QUERY_TYPES= {ANY:"ANY",ALL:"ALL"};
 export const MAX_RESULTS= 30; //maxResults
 
-export const DOCUMENT_STATUS = 0;
-export const PARTY_NAME = 1;
-export const IS_CRIMINAL = 2;
-export const NEXT_APPEARANCE_DATE = 3;
-export const DOCUMENT_TYPE = 4;
-export const STAFF_GROUP = 5; 
-export const COURT_OR_TRIBUNAL_FILE_NUMBER = 6;
-export const DATE_SERVED = 7;
-export const DATE_SERVED_IN_ISO_FORMAT = 8;
-export const LAWYER_NAME = 10;
-export const REGISTRY = 9;
+export const PARTY_NAME = 'partyName';
+export const DOCUMENT_STATUS = 'documentStatus';
+export const STAFF_GROUP = 'staffGroup'; 
+export const IS_CRIMINAL = 'isCriminal';
+export const COURT_OR_TRIBUNAL_FILE_NUMBER = 'courtOrTribunalFileNbr';
+export const DATE_SERVED = 'dueDate';
+export const NEXT_APPEARANCE_DATE = 'followUpDate';
+export const REGISTRY = 'registry';
+export const DOCUMENT_TYPE = 'documentType';
+export const LAWYER_NAME = 'lawyerName';
+export const ASSIGNEE = 'assignee';
 
 // Define list of table headers that need to be displayed
 // Order matters, should map to order of table columns left -> right
 export const TABLE_HEADERS = [
-  {label:'Party',key:'partyName'},
-  {label:'Status',key:'documentStatus'},
-  {label:'Responsibility',key:'staffGroup'},
-  {label:'Criminal Matter',key:'isCriminal'},
-  {label:'Court/Tribunal File #',key:'courtOrTribunalFileNbr'},
-  {label:'Date Served',key:'dueDate'},
-  {label:'Next Appearance Date',key:'followUpDate'},
-  {label:'Registry',key:'registry'},
-  {label:'Document Type',key:'documentType'},
-  {label:'Lawyer',key:'lawyerName'},
-  {label:'Edited by',key:'assignee'},
+  {label:'Party',key: PARTY_NAME},
+  {label:'Status',key: DOCUMENT_STATUS},
+  {label:'Responsibility',key: STAFF_GROUP},
+  {label:'Criminal Matter',key: IS_CRIMINAL},
+  {label:'Court/Tribunal File #',key: COURT_OR_TRIBUNAL_FILE_NUMBER},
+  {label:'Date Served',key: DATE_SERVED},
+  {label:'Next Appearance Date',key: NEXT_APPEARANCE_DATE},
+  {label:'Registry',key: REGISTRY},
+  {label:'Document Type',key: DOCUMENT_TYPE},
+  {label:'Lawyer',key: LAWYER_NAME},
+  {label:'Edited by',key: ASSIGNEE},
   {label:'View/Edit Form',key:''},
 ];

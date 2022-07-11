@@ -1,13 +1,14 @@
 .filters
 {
-    background-color: aliceblue;
-    color: black !important;
-
+    background-color: #4C81AF;
+    color: white !important;
+    border: 1px solid transparent;
+    border-radius: 4px;
 }
 
 .filterDiv
 {
-    margin:5px;
+    margin: 5px 5px 5px -5px;
 }
 
 
@@ -140,7 +141,7 @@
 
 .SearchControl {
     width: 13%;
-   display: inline-block;
+    display: inline-block;
     margin: 2px;   
 }
 
@@ -181,4 +182,24 @@
 
 
 
+.filter-main {
+    margin-left: 10px;
+}
 
+
+@media all and (max-width:800px) //800px for tablets and phones.
+{
+    .my-2 {
+        display: flex;
+        flex-wrap: wrap; 
+    }
+
+    .SearchControl {
+        width: 700px;
+        margin: 2px;   
+    }
+
+    .SearchInput {
+        width: 90%;
+    }
+}
