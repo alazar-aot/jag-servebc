@@ -224,63 +224,66 @@ export default React.memo(() => {
 
   const handlePrintFormWithNotes = () => {
 
-    const elementToPrint = document.getElementsByClassName("container")[0];
+    // First check to ensure the History tab is not currently selected
+    let isHistoryTabSelected = document.getElementById("service-task-details-tab-history").ariaSelected;
+    
+    if(isHistoryTabSelected === 'true'){
+      alert("Sorry - You cannot print to PDF while the History tab is selected. \nPlease select the 'Form' tab and try again.");
+    } else {
+      const elementToPrint = document.getElementsByClassName("container")[0];
 
-
-
-    if (true) {
-
+      // html2canvas(elementToPrint, {logging: true, letterRendering: 1, useCORS: true}).then(canvas => {
+      //   const imgWidth = 210;
+      //   const imgHeight = 200;
+      //   const imgData = canvas.toDataURL('img/png');
+      //   const pdf = new jsPDF('p', 'mm', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
+      //   pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      //   pdf.save("Serve Legal.pdf");
+      // });
 
       const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
-      console.log(doc.internal.pageSize.getWidth());
-      console.log('Elements Equal');
       
+        doc.html(elementToPrint, {
+          callback: function(doc) {
+            doc.save("Serve Legal.pdf"); 
+          }
+        });
 
-
-
-      // console.log(elementToPrint == '<div class="container row task-container">');
-      
-
-      // console.log('FONT LIST: ', doc.getFontList());
-  
-      // Use The Font-Awesome Fonts, So Symbols Render Correctly
-      // doc.setFont('fa-regular-400', 'normal');
-  
-      // doc.html(elementToPrint, {
-      //   callback: function(doc) {
-      //     doc.save("Serve Legal.pdf"); 
-      //   }
-      // })
-    } else {
-      console.log('\nELEMENT TO PRINT IS UNDEFINED\n');
-    }
+    }    
   }
 
   const handlePrintFormWithoutNotes = () => {
 
-    // Find and remove the Note section of the form
-    const noteElement = document.getElementById("ez2i9rr");
-    if(noteElement !== undefined){
-      noteElement.remove();
-    }
+    // First check to ensure the History tab is not currently selected
+    let isHistoryTabSelected = document.getElementById("service-task-details-tab-history").ariaSelected;
 
+    if(isHistoryTabSelected === 'true'){
+      alert("Sorry - You cannot print to PDF while the History tab is selected. \nPlease select the 'Form' tab and try again.");
+    } else {
 
-    // Get and print the remaining elements
-    const elementToPrint = document.getElementsByClassName("container")[0];
+      // Find and remove the Note section of the form
+      const noteElement = document.getElementById("ez2i9rr");
+      if(noteElement !== undefined){
+        noteElement.remove();
+      }
 
-    if (elementToPrint !== undefined){
-      const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
+      // Get and print the remaining elements
+      const elementToPrint = document.getElementsByClassName("container")[0];
 
-      // Use The Font-Awesome Fonts, So Symbols Render Correctly
-      // doc.setFont('fa-regular-400', 'normal');
-  
-      doc.html(elementToPrint, {
-        callback: function(doc) {
-          doc.save("Serve Legal.pdf"); 
-          // Re-add the removed element to the DOM, now that the PDF has been generated
-          elementToPrint.appendChild(noteElement);
-        }
-      })
+      if (elementToPrint !== undefined){
+        const doc = new jsPDF('p', 'pt', [elementToPrint.clientHeight, elementToPrint.clientWidth]);
+
+        // Use The Font-Awesome Fonts, So Symbols Render Correctly
+        // doc.setFont('fa-regular-400', 'normal');
+    
+        doc.html(elementToPrint, {
+          callback: function(doc) {
+            doc.save("Serve Legal.pdf"); 
+            // Re-add the removed element to the DOM, now that the PDF has been generated
+            elementToPrint.appendChild(noteElement);
+          }
+        })
+      }
     }
   }
 
