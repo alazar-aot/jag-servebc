@@ -30,7 +30,7 @@ import { push } from "connected-react-router";
 import TaskFilter from "./TaskFilter";
 import { jsPDF } from "jspdf";
 
- 
+import html2canvas from "html2canvas";
 
 export default React.memo(() => {
   const dispatch = useDispatch();
@@ -194,27 +194,33 @@ export default React.memo(() => {
   const onClickBackButton = () => {
     dispatch(push(`/task_new2`));
     setShowTaskDetails(false);
+    // Update location to /task_new2 so page refreshes?
   };
 
-  const handlePrintTablePDF = () => {
 
-    const elementToPrint = document.getElementById("main");
 
-    // console.log(window.outerHeight);
-    // console.log(window.outerWidth);
+  const printTableToPDF = () => {
+    // Check to ensure client's window is the minium size required to display the whole table
+    // Otherwise the PDF won't print correctly
+    if (window.innerWidth < 1295){
+      alert("Unable to generate PDF - Please ensure entire table is visible then try again"); 
+    } else {
+      // Get the element to print, in this case the table
+      const elementToPrint = document.getElementById("main");
 
-    const doc = new jsPDF('p', 'pt', [elementToPrint.clientWidth * 1.5 + 30, elementToPrint.clientWidth + 30]);
-    // const doc = new jsPDF('p', 'pt', [1700, 1600]);
-
-    // Use The Font-Awesome Fonts, So Symbols Render Correctly
-    // doc.setFont('fa-solid-900', 'normal');
-
-    doc.html(elementToPrint, {
-      callback: function(doc) {
-        doc.save("Serve Legal.pdf"); 
-      }
-    })
+      // Make  & save the PDF
+      html2canvas(elementToPrint, {logging: true, letterRendering: 1, useCORS: true}).then(canvas => {
+        const imgWidth = 210;
+        const imgHeight = 300;
+        const imgData = canvas.toDataURL('img/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        pdf.save("Serve Legal.pdf");
+      });
+    }
   }
+
+
 
   const handlePrintFormWithNotes = () => {
 
@@ -281,17 +287,16 @@ export default React.memo(() => {
   return (
     <Container fluid id="main">
       {!showTaskDetails ? (
-        <section>
+        <div>
           <TaskFilter />
-          {/* <PDFGenerator dataToRender={"test"} /> */}
           <input
             type="button"
             className="btn print-pdf-button"
             value="Print to PDF"
-            onClick={handlePrintTablePDF}
-            ></input>
+            onClick={printTableToPDF}
+        ></input>
           <ServiceFlowTaskList showApplicationSetter={wrapperSetShowTaskDetails}/>
-        </section>
+        </div>
       ) : (
         <div className="container-task-view">
           <div style={{ marginTop: "20px", marginBottom: "20px" }}>
