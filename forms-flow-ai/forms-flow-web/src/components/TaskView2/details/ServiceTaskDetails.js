@@ -25,7 +25,8 @@ import {push} from "connected-react-router";
 import {setFormSubmissionLoading} from "../../../actions/formActions";
 
 
-const ServiceFlowTaskDetails = React.memo(() => {
+const ServiceFlowTaskDetails = React.memo(
+  ({ showApplicationSetter: showTaskDetailsSetter }) => {
   const {taskId} = useParams();
   const bpmTaskId = useSelector(state => state.bpmTasks.taskId);
   const task = useSelector(state => state.bpmTasks.taskDetail);
@@ -43,6 +44,12 @@ const ServiceFlowTaskDetails = React.memo(() => {
   const [processKey, setProcessKey]= useState('');
   // eslint-disable-next-line no-unused-vars
   const [processInstanceId, setProcessInstanceId]=useState('');
+
+  // Toggle the showApplication variable on the View/Edit button click
+  const [showTaskDetails, setShowTaskDetails] = React.useState(true);
+  useEffect(() => {
+    showTaskDetailsSetter(showTaskDetails);
+  }, [showTaskDetailsSetter, showTaskDetails]);
 
 
   useEffect(()=>{
@@ -104,6 +111,7 @@ const ServiceFlowTaskDetails = React.memo(() => {
     dispatch(setSelectedTaskID(null)); // unSelect the Task Selected
     dispatch(fetchServiceTaskList(selectedFilter.id, firstResult, reqData)); //Refreshes the Tasks
     dispatch(push(`/task_new2/`));
+    setShowTaskDetails(false);
   }
 
   const reloadCurrentTask = () => {

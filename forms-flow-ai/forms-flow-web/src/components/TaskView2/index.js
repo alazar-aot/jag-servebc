@@ -340,7 +340,7 @@ export default React.memo(() => {
           </div>
           <Container fluid id="main">
             <Route path={"/task_new2/:taskId?"}>
-              <ServiceFlowTaskDetails id="main" />
+              <ServiceFlowTaskDetails id="main" showApplicationSetter={wrapperSetShowTaskDetails}/>
             </Route>
             <Route path={"/task_new2/:taskId/:notAvailable"}>
               {" "}
