@@ -6,6 +6,18 @@ import TableData from "./TableData";
 
 import {Button} from 'react-bootstrap';
 
+// Import Constants
+import {
+  DOCUMENT_STATUS,
+  PARTY_NAME,
+  IS_CRIMINAL,
+  COURT_OR_TRIBUNAL_FILE_NUMBER,
+  LAWYER_NAME,
+  REGISTRY,
+  DOCUMENT_TYPE,
+  STAFF_GROUP,
+} from "../constants/taskConstants";
+
 const TaskTable = React.memo(
   ({tableHeaders, taskServeLegalDocs, timeFormatter, onViewEditChanged}) => {
 
@@ -32,25 +44,25 @@ const TaskTable = React.memo(
           {taskServeLegalDocs.map((task) => (
               <tr key={task.id} className="custom-th">
                 {/* Party Name */}
-                {getColumnValueFromList(task, 'partyName') === null ? (
+                {getColumnValueFromList(task, PARTY_NAME) === null ? (
                   <td></td>
-                ) : <TableData indexOfData={getColumnValueFromList(task, 'partyName').value} />}
+                ) : <TableData indexOfData={getColumnValueFromList(task, PARTY_NAME).value} />}
                 {/* Status */}
-                {getColumnValueFromList(task, 'documentStatus') === null ? (
+                {getColumnValueFromList(task, DOCUMENT_STATUS) === null ? (
                   <td></td>
-                ) : <TableData indexOfData={getColumnValueFromList(task, 'documentStatus').value} />}
+                ) : <TableData indexOfData={getColumnValueFromList(task, DOCUMENT_STATUS).value} />}
                 {/* Responsibility */}
-                {getColumnValueFromList(task, 'staffGroup') === null ? (
+                {getColumnValueFromList(task, STAFF_GROUP) === null ? (
                   <td></td>
-                ) : <TableData indexOfData={(getColumnValueFromList(task, 'staffGroup').value).toUpperCase()} />}
+                ) : <TableData indexOfData={(getColumnValueFromList(task, STAFF_GROUP).value).toUpperCase()} />}
                 {/* Criminal */}
-                {getColumnValueFromList(task, 'isCriminal') === null ? (
+                {getColumnValueFromList(task, IS_CRIMINAL) === null ? (
                   <td></td>
-                ) : <TableData indexOfData={getColumnValueFromList(task, 'isCriminal').value} />}
+                ) : <TableData indexOfData={getColumnValueFromList(task, IS_CRIMINAL).value} />}
                 {/* Court/Tribunal File # */}
-                {getColumnValueFromList(task, 'courtOrTribunalFileNbr') === null ? (
+                {getColumnValueFromList(task, COURT_OR_TRIBUNAL_FILE_NUMBER) === null ? (
                   <td></td>
-                ) : <TableData indexOfData={getColumnValueFromList(task, 'courtOrTribunalFileNbr').value} />}
+                ) : <TableData indexOfData={getColumnValueFromList(task, COURT_OR_TRIBUNAL_FILE_NUMBER).value} />}
                 {/* Date Served */}
                 {task.due === undefined ? (
                   <td></td>
@@ -60,17 +72,17 @@ const TaskTable = React.memo(
                   <td></td>
                 ) : <TableData indexOfData={task.followUp} formatter={timeFormatter} />}
                 {/* Registry */}
-                {getColumnValueFromList(task, 'registry') === null ? (
+                {getColumnValueFromList(task, REGISTRY) === null ? (
                   <td></td>
-                ) : <TableData indexOfData={getColumnValueFromList(task, 'registry').value} />}
+                ) : <TableData indexOfData={getColumnValueFromList(task, REGISTRY).value} />}
                 {/* Document Type */}
-                {getColumnValueFromList(task, 'documentType') === null ? (
+                {getColumnValueFromList(task, DOCUMENT_TYPE) === null ? (
                   <td></td>
-                ) : <TableData indexOfData={getColumnValueFromList(task, 'documentType').value} />}
+                ) : <TableData indexOfData={getColumnValueFromList(task, DOCUMENT_TYPE).value} />}
                 {/* Lawyer Name */}
-                {getColumnValueFromList(task, 'lawyerName') === null ? (
+                {getColumnValueFromList(task, LAWYER_NAME) === null ? (
                   <td></td>
-                ) : <TableData indexOfData={getColumnValueFromList(task, 'lawyerName').value} />}
+                ) : <TableData indexOfData={getColumnValueFromList(task, LAWYER_NAME).value} />}
                 {/* Edited by */}
                 {task.assignee === undefined ? (
                   <td></td>
